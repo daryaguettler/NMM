@@ -25,6 +25,7 @@ dependencies = [
     "ladybug-core>=0.44.29",
     "pydantic>=2.11,<3",
     "boto3>=1.40.49",
+    "plotly>=6.5.2",
 ]
 
 [project.optional-dependencies]
