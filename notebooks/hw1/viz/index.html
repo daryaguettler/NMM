@@ -1,0 +1,469 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>3d ball simulation</title>
+    <style>
+      body { margin: 0; overflow: hidden; background: #fff; }
+      canvas { display: block; }
+      #ui {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #111;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 12px;
+        z-index: 10;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      #ui label { display: block; margin-bottom: 4px; }
+      #ui input, #ui select {
+        font-size: 12px;
+        margin-left: 4px;
+      }
+      #ui button {
+        margin-top: 4px;
+        font-size: 12px;
+      }
+      #chartPanel {
+        position: absolute;
+        left: 8px;
+        right: 8px;
+        bottom: 8px;
+        height: 170px;
+        padding: 8px;
+        border-radius: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        z-index: 9;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      #energyChart {
+        width: 100%;
+        height: 100%;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ui">
+      <label>
+        balls
+        <input id="ballsCount" type="number" value="5000" min="100" max="50000" step="500" />
+      </label>
+      <label>
+        gravity
+        <input id="gravity" type="number" value="9.81" step="0.1" />
+      </label>
+      <label>
+        bounciness
+        <input id="restitution" type="number" value="0.9" min="0" max="1" step="0.05" />
+      </label>
+      <label>
+        fluid density
+        <input id="fluidDensity" type="number" value="1.225" min="0" step="0.01" />
+      </label>
+      <label>
+        drag coefficient
+        <input id="dragCoefficient" type="number" value="0.47" min="0" step="0.01" />
+      </label>
+      <label>
+        magnus coefficient
+        <input id="magnusCoefficient" type="number" value="0.5" min="0" step="0.01" />
+      </label>
+      <label>
+        angular drag coefficient
+        <input id="angularDragCoefficient" type="number" value="0.1" min="0" step="0.01" />
+      </label>
+      <label>
+        wall friction
+        <input id="wallFriction" type="number" value="0.1" min="0" step="0.01" />
+      </label>
+      <label>
+        ball friction
+        <input id="ballFriction" type="number" value="0.1" min="0" step="0.01" />
+      </label>
+      <label>
+        rolling friction
+        <input id="rollingFriction" type="number" value="0.0" min="0" step="0.01" />
+      </label>
+      <label>
+        contact tolerance
+        <input id="contactTolerance" type="number" value="0.05" min="0" step="0.01" />
+      </label>
+      <label>
+        material
+        <select id="material">
+          <option value="rubber">rubber</option>
+          <option value="steel">steel</option>
+          <option value="foam">foam</option>
+        </select>
+      </label>
+      <label>
+        layout
+        <select id="layout">
+          <option value="high_drop">high drop</option>
+          <option value="random">random</option>
+          <option value="cluster_center">cluster center</option>
+          <option value="cluster_corner">cluster corner</option>
+          <option value="line">line</option>
+        </select>
+      </label>
+      <button id="runSim">run</button>
+    </div>
+    <div id="chartPanel">
+      <canvas id="energyChart"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module">
+      import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
+      import { OrbitControls } from "https://unpkg.com/three@0.165.0/examples/jsm/controls/OrbitControls.js?module";
+      import { Ball, BounceEnvironment, Simulation } from "./simulation.js";
+
+      // scene, camera, renderer
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+
+      const camera = new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.up.set(0, 0, 1);
+      camera.position.set(15, 15, 15);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.target.set(5, 5, 5);
+      controls.update();
+
+      // lights
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.7);
+      scene.add(hemiLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(10, 20, 10);
+      scene.add(dirLight);
+
+      // room box
+      const roomDims = [10, 10, 10];
+      const roomGeom = new THREE.BoxGeometry(roomDims[0], roomDims[1], roomDims[2]);
+      const roomMat = new THREE.MeshBasicMaterial({
+        color: 0x999999,
+        wireframe: true,
+      });
+      const roomMesh = new THREE.Mesh(roomGeom, roomMat);
+      roomMesh.position.set(
+        roomDims[0] / 2,
+        roomDims[1] / 2,
+        roomDims[2] / 2
+      );
+      scene.add(roomMesh);
+
+      // material presets (match spheres.ipynb)
+      const materialPresets = {
+        rubber: { elasticity: 0.9, colorHex: 0xff0000 },   // red
+        steel:  { elasticity: 0.6, colorHex: 0x808080 },   // gray
+        foam:   { elasticity: 0.8, colorHex: 0xffa500 },   // orange
+      };
+
+      // ui elements
+      const ballsCountEl = document.getElementById("ballsCount");
+      const gravityEl = document.getElementById("gravity");
+      const restitutionEl = document.getElementById("restitution");
+      const fluidDensityEl = document.getElementById("fluidDensity");
+      const dragCoefficientEl = document.getElementById("dragCoefficient");
+      const magnusCoefficientEl = document.getElementById("magnusCoefficient");
+      const angularDragCoefficientEl = document.getElementById("angularDragCoefficient");
+      const wallFrictionEl = document.getElementById("wallFriction");
+      const ballFrictionEl = document.getElementById("ballFriction");
+      const rollingFrictionEl = document.getElementById("rollingFriction");
+      const contactToleranceEl = document.getElementById("contactTolerance");
+      const materialEl = document.getElementById("material");
+      const layoutEl = document.getElementById("layout");
+      const runBtn = document.getElementById("runSim");
+      const energyCanvas = document.getElementById("energyChart");
+
+      let sim = null;
+      let instancedMesh = null;
+      let running = false;
+      let frameCount = 0;
+      const chartStride = 4;
+      const chartWindow = 500;
+      const sphereGeom = new THREE.SphereGeometry(1, 8, 8);
+      const sphereMat = new THREE.MeshStandardMaterial({
+        color: 0x4da6ff,
+        roughness: 0.4,
+        metalness: 0.1,
+      });
+      const dummy = new THREE.Object3D();
+      const energyData = {
+        labels: [],
+        datasets: [
+          {
+            label: "total",
+            data: [],
+            borderColor: "#00ffcc",
+            borderWidth: 2,
+            pointRadius: 0,
+            fill: false,
+          },
+          {
+            label: "kinetic",
+            data: [],
+            borderColor: "#00a2ff",
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: false,
+          },
+          {
+            label: "potential",
+            data: [],
+            borderColor: "#ffb347",
+            borderWidth: 1.5,
+            pointRadius: 0,
+            fill: false,
+          },
+        ],
+      };
+      const energyChart = new Chart(energyCanvas.getContext("2d"), {
+        type: "line",
+        data: energyData,
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: false,
+          scales: {
+            x: { display: false, grid: { color: "#333" } },
+            y: { grid: { color: "#333" }, ticks: { color: "#aaa" } },
+          },
+          plugins: {
+            legend: { labels: { color: "#ddd", boxWidth: 14 } },
+            tooltip: { enabled: false },
+          },
+        },
+      });
+
+      function resetEnergyChart() {
+        energyData.labels.length = 0;
+        for (const ds of energyData.datasets) ds.data.length = 0;
+        energyChart.update("none");
+      }
+
+      function computeEnergies() {
+        if (!sim) return { kinetic: 0, potential: 0, total: 0 };
+        const env = sim.environment;
+        const gv = env.gravityVector;
+        const gNorm = Math.hypot(gv[0], gv[1], gv[2]);
+        const ux = gNorm > 0 ? gv[0] / gNorm : 0.0;
+        const uy = gNorm > 0 ? gv[1] / gNorm : 0.0;
+        const uz = gNorm > 0 ? gv[2] / gNorm : -1.0;
+
+        let kinetic = 0.0;
+        let potential = 0.0;
+        for (const b of sim.balls) {
+          const vx = b.currentVelocity[0];
+          const vy = b.currentVelocity[1];
+          const vz = b.currentVelocity[2];
+          const speedSq = vx * vx + vy * vy + vz * vz;
+          kinetic += 0.5 * b.mass * speedSq;
+
+          const px = b.currentPosition[0];
+          const py = b.currentPosition[1];
+          const pz = b.currentPosition[2];
+          const height = -(px * ux + py * uy + pz * uz);
+          potential += b.mass * env.gravity * height;
+        }
+        return { kinetic, potential, total: kinetic + potential };
+      }
+
+      function pushEnergyPoint(stepIndex) {
+        const e = computeEnergies();
+        energyData.labels.push(stepIndex.toString());
+        energyData.datasets[0].data.push(e.total);
+        energyData.datasets[1].data.push(e.kinetic);
+        energyData.datasets[2].data.push(e.potential);
+
+        if (energyData.labels.length > chartWindow) {
+          energyData.labels.shift();
+          for (const ds of energyData.datasets) ds.data.shift();
+        }
+        energyChart.update("none");
+      }
+
+      function buildBalls(count, layout, materialKey) {
+        const balls = [];
+        const radius = 0.08;
+        const dims = roomDims;
+        const mat = materialPresets[materialKey];
+        const elasticity = mat.elasticity;
+        const colorName = "blue"; // simulation uses string; render uses hex below
+
+        for (let i = 0; i < count; i++) {
+          let x, y, z;
+
+          if (layout === "cluster_center") {
+            const cx = dims[0] / 2;
+            const cy = dims[1] / 2;
+            const cz = dims[2] / 2;
+            const spread = 1.0;
+            x = cx + (Math.random() - 0.5) * spread;
+            y = cy + (Math.random() - 0.5) * spread;
+            z = cz + (Math.random() - 0.5) * spread;
+          } else if (layout === "cluster_corner") {
+            const spread = 1.0;
+            x = radius + Math.random() * spread;
+            y = radius + Math.random() * spread;
+            z = radius + Math.random() * spread;
+          } else if (layout === "line") {
+            const t = i / Math.max(1, count - 1);
+            x = radius + t * (dims[0] - 2 * radius);
+            y = dims[1] / 2;
+            z = dims[2] / 2;
+          } else if (layout === "high_drop") {
+            x = Math.random() * (dims[0] - 2 * radius) + radius;
+            y = Math.random() * (dims[1] - 2 * radius) + radius;
+            z = dims[2] - radius - Math.random(); // near top
+          } else {
+            // random
+            x = Math.random() * (dims[0] - 2 * radius) + radius;
+            y = Math.random() * (dims[1] - 2 * radius) + radius;
+            z = Math.random() * (dims[2] - 2 * radius) + radius;
+          }
+
+          balls.push(
+            new Ball({
+              radius,
+              density: 1.0,
+              elasticity,
+              stiffness: 500.0,
+              startPosition: [x, y, z],
+              startVelocity: [
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+                (Math.random() - 0.5) * 2,
+              ],
+              color: colorName,
+            })
+          );
+        }
+        return balls;
+      }
+
+      function buildSimulation() {
+        const count = parseInt(ballsCountEl.value, 10) || 1000;
+        const gravity = parseFloat(gravityEl.value) || 9.81;
+        const restitution = parseFloat(restitutionEl.value) || 0.9;
+        const fluidDensity = parseFloat(fluidDensityEl.value);
+        const dragCoefficient = parseFloat(dragCoefficientEl.value);
+        const magnusCoefficient = parseFloat(magnusCoefficientEl.value);
+        const angularDragCoefficient = parseFloat(angularDragCoefficientEl.value);
+        const wallFriction = parseFloat(wallFrictionEl.value);
+        const ballFriction = parseFloat(ballFrictionEl.value);
+        const rollingFriction = parseFloat(rollingFrictionEl.value);
+        const contactTolerance = parseFloat(contactToleranceEl.value);
+        const materialKey = materialEl.value;
+        const layout = layoutEl.value;
+
+        // cleanup old mesh
+        if (instancedMesh) {
+          scene.remove(instancedMesh);
+          instancedMesh.dispose?.();
+        }
+
+        const balls = buildBalls(count, layout, materialKey);
+        const env = new BounceEnvironment({
+          roomDimensions: roomDims,
+          gravity: gravity,
+          gravityVector: [0, 0, -1],
+          linearDrag: 0,
+          fluidDensity: Number.isFinite(fluidDensity) ? fluidDensity : 1.225,
+          dragCoefficient: Number.isFinite(dragCoefficient) ? dragCoefficient : 0.47,
+          magnusCoefficient: Number.isFinite(magnusCoefficient) ? magnusCoefficient : 0.5,
+          angularDragCoefficient: Number.isFinite(angularDragCoefficient) ? angularDragCoefficient : 0.1,
+          wallFriction: Number.isFinite(wallFriction) ? wallFriction : 0.2,
+          ballFriction: Number.isFinite(ballFriction) ? ballFriction : 0.3,
+          rollingFriction: Number.isFinite(rollingFriction) ? rollingFriction : 0.3,
+          contactTolerance: Number.isFinite(contactTolerance) ? contactTolerance : 0.05,
+          wallRestitution: restitution,
+        });
+
+        sim = new Simulation({
+          balls,
+          environment: env,
+          timeStep: 0.1,
+          totalTimeSteps: 0,
+        });
+        for (const b of sim.balls) b.initializeState();
+
+        // update material color by material preset
+        const matPreset = materialPresets[materialKey];
+        sphereMat.color.setHex(matPreset.colorHex);
+
+        instancedMesh = new THREE.InstancedMesh(
+          sphereGeom,
+          sphereMat,
+          sim.balls.length
+        );
+        scene.add(instancedMesh);
+        frameCount = 0;
+        resetEnergyChart();
+        pushEnergyPoint(frameCount);
+        running = false;
+      }
+
+      function updateInstances() {
+        if (!sim || !instancedMesh) return;
+        const balls = sim.balls;
+        for (let i = 0; i < balls.length; i++) {
+          const b = balls[i];
+          dummy.position.set(
+            b.currentPosition[0],
+            b.currentPosition[1],
+            b.currentPosition[2]
+          );
+          dummy.scale.set(b.radius, b.radius, b.radius);
+          dummy.updateMatrix();
+          instancedMesh.setMatrixAt(i, dummy.matrix);
+        }
+        instancedMesh.instanceMatrix.needsUpdate = true;
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+      window.addEventListener("resize", onWindowResize);
+
+      runBtn.addEventListener("click", () => {
+        buildSimulation();
+        running = true;
+      });
+
+      // build initial static configuration
+      buildSimulation();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (sim && running) {
+          sim.step(false);
+          frameCount += 1;
+          if (frameCount % chartStride === 0) {
+            pushEnergyPoint(frameCount);
+          }
+        }
+        updateInstances();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>
