@@ -26,6 +26,7 @@ dependencies = [
     "pydantic>=2.11,<3",
     "boto3>=1.40.49",
     "plotly>=6.5.2",
+    "sympy>=1.14.0",
 ]
 
 [project.optional-dependencies]
@@ -79,7 +80,7 @@ include = ["hw1"]
 typeCheckingMode = "standard"
 ignore = ["tests/"]
 venvPath = "."
-venv = ".venv"
+venv = "NMM"
 
 
 [tool.ruff]
