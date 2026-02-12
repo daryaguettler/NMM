@@ -1,0 +1,326 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>3d ball simulation (complex)</title>
+    <style>
+      body { margin: 0; overflow: hidden; background: #fff; }
+      canvas { display: block; }
+      #ui {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+        padding: 8px;
+        background: rgba(255, 255, 255, 0.9);
+        color: #111;
+        font-family: system-ui, -apple-system, sans-serif;
+        font-size: 12px;
+        z-index: 10;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      }
+      #ui label { display: block; margin-bottom: 4px; }
+      #ui input, #ui select {
+        font-size: 12px;
+        margin-left: 4px;
+      }
+      #ui button {
+        margin-top: 4px;
+        font-size: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="ui">
+      <label>
+        balls
+        <input id="ballsCount" type="number" value="1000" min="10" max="50000" step="50" />
+      </label>
+      <label>
+        gravity
+        <input id="gravity" type="number" value="9.81" step="0.1" />
+      </label>
+      <label>
+        bounciness
+        <input id="restitution" type="number" value="0.9" min="0" max="1" step="0.05" />
+      </label>
+      <label>
+        entry speed x
+        <input id="entrySpeedX" type="number" value="6.0" step="0.5" />
+      </label>
+      <label>
+        layout
+        <select id="layout">
+          <option value="side_entry">side entry with tube</option>
+          <option value="random">random in room</option>
+        </select>
+      </label>
+      <button id="runSim">run</button>
+    </div>
+
+    <script type="module">
+      import * as THREE from "https://unpkg.com/three@0.165.0/build/three.module.js";
+      import { OrbitControls } from "https://unpkg.com/three@0.165.0/examples/jsm/controls/OrbitControls.js?module";
+      import {
+        BounceEnvironmentComplex,
+        SimulationComplex,
+        BoxObstacle,
+        createSideEntryBalls,
+        Ball,
+      } from "./simulation_complex.js";
+
+      const scene = new THREE.Scene();
+      scene.background = new THREE.Color(0xffffff);
+
+      const camera = new THREE.PerspectiveCamera(
+        60,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        1000
+      );
+      camera.up.set(0, 0, 1);
+      camera.position.set(15, 15, 15);
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true });
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      document.body.appendChild(renderer.domElement);
+
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.target.set(5, 5, 5);
+      controls.update();
+
+      const hemiLight = new THREE.HemisphereLight(0xffffff, 0x222222, 0.7);
+      scene.add(hemiLight);
+
+      const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+      dirLight.position.set(10, 20, 10);
+      scene.add(dirLight);
+
+      const roomDims = [10, 10, 10];
+
+      // visualize a tube instead of a cube
+      const tubeRadius = 1.0;
+      const tubeLength = roomDims[0] + 2.0;
+      const tubeGeom = new THREE.CylinderGeometry(
+        tubeRadius,
+        tubeRadius,
+        tubeLength,
+        32,
+        1,
+        true
+      );
+      const tubeMat = new THREE.MeshBasicMaterial({
+        color: 0x999999,
+        wireframe: true,
+        side: THREE.DoubleSide,
+      });
+      const tubeMesh = new THREE.Mesh(tubeGeom, tubeMat);
+      tubeMesh.position.set(
+        roomDims[0] / 2,
+        roomDims[1] / 2,
+        roomDims[2] / 2
+      );
+      // align tube axis with x direction
+      tubeMesh.rotation.z = Math.PI / 2;
+      scene.add(tubeMesh);
+
+      // simple visual obstacles matching BoxObstacle geometry
+      const obstacleColor = 0x4444ff;
+      const obstacles = [];
+      const obstacleMeshes = [];
+
+      function addBoxObstacle(minCorner, maxCorner) {
+        obstacles.push(
+          new BoxObstacle({
+            minCorner,
+            maxCorner,
+            restitution: 0.8,
+          })
+        );
+        const sizeX = maxCorner[0] - minCorner[0];
+        const sizeY = maxCorner[1] - minCorner[1];
+        const sizeZ = maxCorner[2] - minCorner[2];
+        const geom = new THREE.BoxGeometry(sizeX, sizeY, sizeZ);
+        const mat = new THREE.MeshStandardMaterial({
+          color: obstacleColor,
+          opacity: 0.5,
+          transparent: true,
+        });
+        const mesh = new THREE.Mesh(geom, mat);
+        mesh.position.set(
+          minCorner[0] + sizeX / 2,
+          minCorner[1] + sizeY / 2,
+          minCorner[2] + sizeZ / 2
+        );
+        scene.add(mesh);
+        obstacleMeshes.push(mesh);
+      }
+
+      // obstacles placed inside the tube region (around center in y,z)
+      const tubeYCenter = roomDims[1] / 2;
+      const tubeZCenter = roomDims[2] / 2;
+      const slabHalfWidth = 0.6;
+      const slabThickness = 1.0;
+
+      // a few slabs along x inside the tube (thicker for more reliable collisions)
+      addBoxObstacle(
+        [3.0, tubeYCenter - slabHalfWidth, tubeZCenter - slabHalfWidth],
+        [3.0 + slabThickness, tubeYCenter + slabHalfWidth, tubeZCenter + slabHalfWidth]
+      );
+      addBoxObstacle(
+        [5.0, tubeYCenter - slabHalfWidth, tubeZCenter - slabHalfWidth],
+        [5.0 + slabThickness, tubeYCenter + slabHalfWidth, tubeZCenter + slabHalfWidth]
+      );
+      addBoxObstacle(
+        [7.0, tubeYCenter - slabHalfWidth, tubeZCenter - slabHalfWidth],
+        [7.0 + slabThickness, tubeYCenter + slabHalfWidth, tubeZCenter + slabHalfWidth]
+      );
+
+      const ballsCountEl = document.getElementById("ballsCount");
+      const gravityEl = document.getElementById("gravity");
+      const restitutionEl = document.getElementById("restitution");
+      const entrySpeedXEl = document.getElementById("entrySpeedX");
+      const layoutEl = document.getElementById("layout");
+      const runBtn = document.getElementById("runSim");
+
+      let sim = null;
+      let instancedMesh = null;
+      let running = false;
+      const sphereGeom = new THREE.SphereGeometry(1, 8, 8);
+      const sphereMat = new THREE.MeshStandardMaterial({
+        color: 0x4da6ff,
+        roughness: 0.4,
+        metalness: 0.1,
+      });
+      const dummy = new THREE.Object3D();
+
+      function buildBalls(count, layout, entrySpeedX) {
+        const radius = 0.08;
+        const density = 1.0;
+
+        if (layout === "side_entry") {
+          // tube region in y and z, roughly matching rendered tube radius
+          const tubeYRange = [roomDims[1] / 2 - tubeRadius * 0.6, roomDims[1] / 2 + tubeRadius * 0.6];
+          const tubeZRange = [roomDims[2] / 2 - tubeRadius * 0.6, roomDims[2] / 2 + tubeRadius * 0.6];
+          return createSideEntryBalls({
+            count,
+            radius,
+            density,
+            elasticity: parseFloat(restitutionEl.value) || 0.9,
+            roomDimensions: roomDims,
+            entryXOffset: -0.5,
+            entrySpeedX,
+            tubeYRange,
+            tubeZRange,
+          });
+        }
+
+        // fallback: random positions inside room
+        const balls = [];
+        const elasticity = parseFloat(restitutionEl.value) || 0.9;
+        for (let i = 0; i < count; i++) {
+          const x = Math.random() * (roomDims[0] - 2 * radius) + radius;
+          const y = Math.random() * (roomDims[1] - 2 * radius) + radius;
+          const z = Math.random() * (roomDims[2] - 2 * radius) + radius;
+          balls.push(
+            new Ball({
+              radius,
+              density,
+              elasticity,
+              color: "blue",
+              startPosition: [x, y, z],
+              startVelocity: [0, 0, 0],
+            })
+          );
+        }
+        return balls;
+      }
+
+      function buildSimulation() {
+        const count = parseInt(ballsCountEl.value, 10) || 1000;
+        const gravity = parseFloat(gravityEl.value) || 9.81;
+        const restitution = parseFloat(restitutionEl.value) || 0.9;
+        const entrySpeedX = parseFloat(entrySpeedXEl.value) || 6.0;
+        const layout = layoutEl.value;
+
+        if (instancedMesh) {
+          scene.remove(instancedMesh);
+          instancedMesh.dispose?.();
+        }
+
+        const balls = buildBalls(count, layout, entrySpeedX);
+        const env = new BounceEnvironmentComplex({
+          roomDimensions: roomDims,
+          gravity,
+          gravityVector: [0, 0, -1],
+          wallRestitution: restitution,
+          friction: 0.1,
+          sleepThreshold: 0.05,
+          obstacles,
+          tubeRadius,
+          tubeCenterY: tubeYCenter,
+          tubeCenterZ: tubeZCenter,
+        });
+
+        sim = new SimulationComplex({
+          balls,
+          environment: env,
+          timeStep: 0.02,
+          totalTimeSteps: 0,
+        });
+        for (const b of sim.balls) b.initializeState();
+
+        instancedMesh = new THREE.InstancedMesh(
+          sphereGeom,
+          sphereMat,
+          sim.balls.length
+        );
+        scene.add(instancedMesh);
+        running = false;
+      }
+
+      function updateInstances() {
+        if (!sim || !instancedMesh) return;
+        const balls = sim.balls;
+        for (let i = 0; i < balls.length; i++) {
+          const b = balls[i];
+          dummy.position.set(
+            b.currentPosition[0],
+            b.currentPosition[1],
+            b.currentPosition[2]
+          );
+          dummy.scale.set(b.radius, b.radius, b.radius);
+          dummy.updateMatrix();
+          instancedMesh.setMatrixAt(i, dummy.matrix);
+        }
+        instancedMesh.instanceMatrix.needsUpdate = true;
+      }
+
+      function onWindowResize() {
+        camera.aspect = window.innerWidth / window.innerHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(window.innerWidth, window.innerHeight);
+      }
+      window.addEventListener("resize", onWindowResize);
+
+      runBtn.addEventListener("click", () => {
+        buildSimulation();
+        running = true;
+      });
+
+      buildSimulation();
+
+      function animate() {
+        requestAnimationFrame(animate);
+        if (sim && running) {
+          sim.step(false);
+        }
+        updateInstances();
+        renderer.render(scene, camera);
+      }
+
+      animate();
+    </script>
+  </body>
+</html>
+
