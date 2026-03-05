@@ -1,0 +1,1105 @@
+ 
+                                                                        03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                *********   *         *  ***********   *********   **********   **********   *********   *         *
+               *         *  *         *       *       *         *  *         *  *           *            *       *
+               *         *  *         *       *       *         *  *         *  *           *            *     *
+               *         *  *         *       *       *         *  *         *  *           *            *   *
+               *         *  *         *       *       *         *  *         *  *           *            * *
+               ***********  *         *       *       *         *  *         *  **********   *********   *
+               *         *  *         *       *       *         *  *         *  *                     *  * *
+               *         *  *         *       *       *         *  *         *  *                     *  *   *
+               *         *  *         *       *       *         *  *         *  *                     *  *     *
+               *         *  *         *       *       *         *  *         *  *                     *  *       *
+               *         *   *********        *        *********   **********   **********   *********   *         *
+ 
+ 
+                     *         *   *********    *********   ***********  **********    *********   *         *
+                     **        *  *         *  *                 *       *         *  *         *  **        *
+                     * *       *  *         *  *                 *       *         *  *         *  * *       *
+                     *  *      *  *         *  *                 *       *         *  *         *  *  *      *
+                     *   *     *  *         *  *                 *       *         *  *         *  *   *     *
+                     *    *    *  ***********   *********        *       **********   ***********  *    *    *
+                     *     *   *  *         *            *       *       *     *      *         *  *     *   *
+                     *      *  *  *         *            *       *       *      *     *         *  *      *  *
+                     *       * *  *         *            *       *       *       *    *         *  *       * *
+                     *        **  *         *            *       *       *        *   *         *  *        **
+                     *         *  *         *   *********        *       *         *  *         *  *         *
+ 
+ 
+ 
+                                                          A U T O D E S K
+ 
+ 
+ 
+                                          REGISTERED TO:    FEACS_SDM/GCP_11.10.1+7.8b0be38b2c
+ 
+                                          SERIAL NUMBER:    AIX-IX86-01100-0
+ 
+                                          PROGRAM VERSION:  20.2.0.23
+ 
+                                          CPU VERSION:      Intel Pentium
+ 
+                                          OS VERSION:       Linux x64
+ 
+                                          DEVELOPED BY:     Autodesk, Inc
+                                                            One Market, Ste. 400
+                                                            San Francisco, CA 94105
+ 
+                                                            Support Phone  866-487-8680
+                                                            Support URL    subscription.autodesk.com
+                                                            Product URL    autodesk.com/simulation-software
+ 
+ 
+ 
+                                          Software (C) Copyright 2023
+                                          Autodesk, Inc.
+                                          All Rights Reserved.
+ 
+                                          Integrated PCGLSS Solver (C) Copyright 1992-2023
+                                          Computational Applications and System Integration, Inc.
+ 
+                                          NASTRAN is a registered trademark of the National Aeronautics
+                                          and Space Administration.
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                        03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      2
+ 
+ 
+ 
+ 
+                                  M O D E L   I N I T I A L I Z A T I O N   D I R E C T I V E S
+ 
+ 
+ 
+ 
+ [FILE MANAGEMENT DIRECTIVES]
+ 
+ DATABASE         = /tmp/ADSKSIMPKGSolverShared-42-1/FEACS-580af2d1/Neutron/AFEA_
+ FILESIGNATURE    = 9529000863
+ FILEBUFFERSIZE   = 200
+ FILESPEC         = /tmp/ADSKSIMPKGSolverShared-42-1/nastmp_BrUn79/
+ NFILEBUFFER      = 1
+ PURGE            = ON
+ RSLTFILEPURGE    = ON
+ 
+ [OUTPUT CONTROL DIRECTIVES]
+ 
+ BULKDATAOUT      = OFF
+ BULKDATASORT     = ON
+ DISKSTATUS       = ON
+ ELAPSEDTIME      = OFF
+ FEMAPRSLTVECTID  = ON
+ INCRRSLTOUT      = OFF
+ LEFTMARGIN       = 1
+ LINE             = 75
+ MEMORYSTATUS     = ON
+ MODLDATAFORMAT   = 3
+ MODLDATAOUT      = ON
+ MODLINITOUT      = ON
+ MODLSTATUS       = DISPLAY
+ OUTCONTSYMBOL    = OFF
+ OUTDISPGEOMMODE  = 1
+ OUTDISPSETID     = 100
+ OUTGRIDOFFSET    = 100000
+ OUTLOADSETID     = 100
+ OUTPAGEFORMAT    = OFF
+ OUTSPCSETID      = 100
+ OUTSTRNSETID     = 100
+ OUTTEMPSETID     = 100
+ OUTZEROVECT      = OFF
+ PCHFILEDBLEPRCS  = OFF
+ PCHFILETYPE      = NASTRAN
+ RSLTFILECOMP     = AUTO
+ RSLTFILEDBLEPRCS = OFF
+ RSLTFILETYPE     = FEMAP BINARY
+ SECONDS          = ON
+ SYSTEMSTATUS     = OFF
+ TRSLDISPDATA     = OFF
+ TRSLDMIDATA      = OFF
+ TRSLMODLDATA     = OFF
+ TRSLPRESDATA     = OFF
+ TRSLRBSEDATA     = OFF
+ TRSLSPCDATA      = OFF
+ TRSLSTRNDATA     = OFF
+ TRSLTEMPDATA     = OFF
+ XYPLOTCSVOUT     = OFF
+ 
+ [MEMORY MANAGEMENT DIRECTIVES]
+ 
+ MAXRAM           = 0
+ MINRAM           = 0
+ RAM              = 0
+ RESERVEDRAM      = 0
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+                                                                        03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      3
+ 
+ 
+ 
+ 
+                                  M O D E L   I N I T I A L I Z A T I O N   D I R E C T I V E S
+ 
+ 
+ 
+ [PROGRAM CONTROL DIRECTIVES]
+ 
+ DECOMPAUTOSIZE   = 50000
+ DECOMPMETHOD     = AUTO
+ DYNRSLTMETHOD    = AUTO
+ EXTRACTAUTOSIZE  = 10000
+ EXTRACTMETHOD    = AUTO
+ GPWEIGHTMETHOD   = AUTO
+ LICENSEMANAGER   = HANDSHAKE
+ RESTART          = OFF
+ RSPECDISPMETHOD  = NODAL
+ RSPECVECTMETHOD  = ON
+ SHELLEGRID       = OFF
+ SOLIDEGRID       = OFF
+ WAITFORLICENSE   = 3
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      4
+ 
+ 
+ 
+ 
+                                                M O D E L   D A T A B A S E   S I Z E
+ 
+ 
+ 
+ 
+ MODEL DATABASE SIZE
+ 
+ SUBCASES                     =        1
+ GRID POINTS                  =     1778
+ ELEMENTS                     =      878
+ ELEMENT PROPERTIES           =        1
+ MATERIAL PROPERTIES          =        1
+ SINGLE POINT CONSTRAINTS     =       65
+ GRID POINT FORCES            =        3
+ SETS                         =        1
+ SURFACES                     =        1
+ VOLUMES                      =        1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      5
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ MODEL SIZE = 5334 DEGREES OF FREEDOM
+ 
+ MODEL GENERALIZED SHAPE RATIO = 7.4188E-01
+ 
+ GLOBAL STIFFNESS MATRIX ASSEMBLY STATISTICS
+ 
+ ASSEMBLY TIME FOR 878 ELEMENTS = 0.09 SECONDS
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      6
+ 
+ 
+ 
+ 
+                                          G R I D   P O I N T   W E I G H T   O U T P U T
+ 
+ 
+ 
+ 
+                                                          REFERENCE POINT = 0
+ 
+                                                                 M O
+                         1.014036E+02  0.000000E+00  0.000000E+00  0.000000E+00 -6.315009E-01 -7.250465E+00
+                         0.000000E+00  1.014036E+02  0.000000E+00  6.315009E-01  0.000000E+00  5.151303E+01
+                         0.000000E+00  0.000000E+00  1.014036E+02  7.250465E+00 -5.151303E+01  0.000000E+00
+                         0.000000E+00  6.315009E-01  7.250465E+00  7.942831E-01 -3.684657E+00  3.209340E-01
+                        -6.315009E-01  0.000000E+00 -5.151303E+01 -3.684657E+00  3.504993E+01  4.592437E-02
+                        -7.250465E+00  5.151303E+01  0.000000E+00  3.209340E-01  4.592437E-02  3.556753E+01
+ 
+ 
+                                                                  S
+                                              1.000000E+00  0.000000E+00  0.000000E+00
+                                              0.000000E+00  1.000000E+00  0.000000E+00
+                                              0.000000E+00  0.000000E+00  1.000000E+00
+ 
+ 
+                              DIRECTION                                        CENTER OF MASS
+                         MASS AXIS SYSTEM (S)     MASS                 X             Y             Z
+                                  X           1.014036E+02        0.00000E+00   7.15011E-02  -6.22760E-03
+                                  Y           1.014036E+02        5.08000E-01   0.00000E+00  -6.22760E-03
+                                  Z           1.014036E+02        5.08000E-01   7.15011E-02   0.00000E+00
+ 
+ 
+                                                                 I(S)
+                                              2.719344E-01  1.420262E-03 -1.315875E-04
+                                              1.420262E-03  8.877381E+00 -7.713828E-04
+                                             -1.315875E-04 -7.713828E-04  8.880493E+00
+ 
+ 
+                                                                 I(Q)
+                                              2.719342E-01
+                                                            8.877201E+00
+                                                                          8.880674E+00
+ 
+ 
+                                                                  Q
+                                              1.000000E+00 -1.650408E-04  1.527087E-05
+                                             -1.572050E-04 -9.736304E-01 -2.281312E-01
+                                             -5.251914E-05 -2.281311E-01  9.736304E-01
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      7
+ 
+ 
+ 
+ 
+                                                    P A R T   D E F I N I T I O N
+ 
+   PROPERTY     MATERIAL       PROPERTY           BOUNDING DIMENSIONS                MASS       VOLUME          GRID      ELEMENTS
+      ID           ID            TYPE          D1          D2          D3                                      POINTS
+        1            1          SOLID      1.0160E+00  1.1100E-01  1.1454E-01     1.0140E+02  1.2918E-02        1778          878
+ 
+ 
+    TOTAL                                  1.0160E+00  1.1100E-01  1.1454E-01     1.0140E+02  1.2918E-02        1778          878
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      8
+ 
+ 
+ SUBCASE 1                                                           SUBCASE 1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ MAXIMUM STIFFNESS MATRIX DIAGONAL =  1.0507E+11  AT GRID 1479 COMPONENT 1
+ MINIMUM STIFFNESS MATRIX DIAGONAL =  1.6668E+09  AT GRID 74   COMPONENT 1
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE      9
+ 
+ 
+ SUBCASE 1                                                           SUBCASE 1
+ 
+ 
+ 
+ 
+ 
+ 
+ GLOBAL STIFFNESS MATRIX ITERATIVE SOLUTION STATISTICS
+ 
+ MEMORY ALLOCATED    =       150002 WORDS         1.1 MEGABYTES
+ DISK SPACE ACCESSED =       196722 WORDS         1.5 MEGABYTES
+ 
+ NUMBER OF SOLUTION ITERATIONS = 51
+ FINAL CONVERGENCE FACTOR      = 5.768E-07
+ 
+ PRIMAL PRECONDITIONER USED
+ 
+ SOLUTION TIME FOR 5334 DEGREES OF FREEDOM = 0.16 SECONDS
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     10
+ 
+ 
+ 
+ 
+                                            L O A D   V E C T O R   R E S U L T A N T
+ 
+    SUBCASE         T1            T2            T3            R1            R2            R3
+      ID
+        1      0.000000E+00  0.000000E+00 -1.000000E+03 -7.150107E+01  0.000000E+00  0.000000E+00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     11
+ 
+ 
+ 
+ 
+                           S I N G L E   P O I N T   C O N S T R A I N T   V E C T O R   R E S U L T A N T
+ 
+    SUBCASE         T1            T2            T3            R1            R2            R3
+      ID
+        1      1.201585E-03 -2.223751E-04  9.999998E+02  7.150100E+01  1.988674E-04 -4.085242E-04
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     12
+ 
+ 
+ 
+ 
+                             M U L T I P O I N T   C O N S T R A I N T   V E C T O R   R E S U L T A N T
+ 
+    SUBCASE         T1            T2            T3            R1            R2            R3
+      ID
+        1      0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     13
+ 
+ 
+ 
+ 
+                                            M A X I M U M   A P P L I E D   L O A D S
+ 
+    SUBCASE         T1            T2            T3            R1            R2            R3
+      ID
+        1      0.000000E+00  0.000000E+00  5.000000E+02  0.000000E+00  0.000000E+00  0.000000E+00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     14
+ 
+ 
+ 
+ 
+                                            M A X I M U M   D I S P L A C E M E N T S
+ 
+    SUBCASE         T1            T2            T3            R1            R2            R3
+      ID
+        1      1.011330E-05  3.039848E-07  1.199160E-04  0.000000E+00  0.000000E+00  0.000000E+00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     15
+ 
+ 
+ 
+ 
+                          M A X I M U M   F O R C E S   O F   S I N G L E   P O I N T   C O N S T R A I N T
+ 
+    SUBCASE         T1            T2            T3            R1            R2            R3
+      ID
+        1      9.945701E+02  2.032147E+02  2.826551E+02  0.000000E+00  0.000000E+00  0.000000E+00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     16
+ 
+ 
+ 
+ 
+                                   I N T E R N A L   L O A D   V E C T O R   R E S U L T A N T
+ 
+    SUBCASE         T1            T2            T3            R1            R2            R3
+      ID
+        1      0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00  0.000000E+00
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     17
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   D I R E C T I V E   D E F I N I T I O N
+ 
+ 
+ 
+ BUFFEREDDECKREAD = ON
+ BULKDATAOUT      = OFF
+ BULKDATASORT     = ON
+ DATABASE         = /tmp/ADSKSIMPKGSolverShared-42-1/FEACS-580af2d1/Neutron/AFEA_
+ DECOMPAUTOSIZE   = 50000
+ DECOMPMETHOD     = PCGLSS
+ DIAGNOSTICLEVEL  = 0
+ DISKSTATUS       = ON
+ DYNRSLTMETHOD    = AUTO
+ ELAPSEDTIME      = OFF
+ EXTRACTAUTOSIZE  = 10000
+ EXTRACTMETHOD    = LANCZOS
+ FEMAPRSLTVECTID  = ON
+ FILEBUFFERSIZE1  = 200
+ FILEBUFFERSIZE2  = 200
+ FILEBUFFERSIZE3  = 200
+ FILEBUFFERSIZE4  = 200
+ FILESIGNATURE    = 9529000863
+ FILESPEC1        = /tmp/ADSKSIMPKGSolverShared-42-1/nastmp_BrUn79/
+ FILESPEC2        = /tmp/ADSKSIMPKGSolverShared-42-1/nastmp_BrUn79/
+ FILESPEC3        = /tmp/ADSKSIMPKGSolverShared-42-1/nastmp_BrUn79/
+ FILESPEC4        = /tmp/ADSKSIMPKGSolverShared-42-1/nastmp_BrUn79/
+ GPWEIGHTMETHOD   = VECTOR
+ INCRGEOMOUT      = OFF
+ INCRRSLTOUT      = OFF
+ INMEMORYIO       = ON
+ LEFTMARGIN       = 1
+ LICENSEMANAGER   = HANDSHAKE
+ LINE             = 75
+ MAXRAM           = 0
+ MEMORYSTATUS     = ON
+ MINRAM           = 0
+ MODLDATAFORMAT   = 3
+ MODLDATAOUT      = OFF
+ MODLINITOUT      = ON
+ MODLSTATUS       = DISPLAY
+ NDISKS           = 1
+ NFILEBUFFER1     = 1
+ NFILEBUFFER2     = 1
+ NFILEBUFFER3     = 1
+ NFILEBUFFER4     = 1
+ NPROCESSORS      = 8
+ PROCESSPRIORITY  = NORMAL
+ OPTIMIZESETTINGS = FUSION
+ OUTCONTSYMBOL    = OFF
+ OUTDISPGEOMMODE  = 1
+ OUTDISPSETID     = 100
+ OUTLOADSETID     = 100
+ OUTPAGEFORMAT    = OFF
+ OUTGRIDOFFSET    = 100000
+ OUTSPCSETID      = 100
+ OUTSTRNSETID     = 100
+ OUTSTRSSETID     = 100
+ OUTTEMPSETID     = 100
+ OUTZEROVECT      = OFF
+ PCHFILEDBLEPRCS  = OFF
+ PCHFILETYPE      = NASTRAN
+ PURGE            = ON
+ RAM              = 50608
+ RESERVEDRAM      = 0
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     18
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   D I R E C T I V E   D E F I N I T I O N
+ 
+ 
+ 
+ RESTART          = OFF
+ RSLTFILEDBLEPRCS = OFF
+ RSLTFILEFORMAT   = PLATFORM
+ RSLTFILEPURGE    = ON
+ RSLTFILETYPE     = FEMAP BINARY
+ RSLTLABEL        = 1
+ RSPECDISPMETHOD  = NODAL
+ RSPECVECTMETHOD  = OFF
+ SECONDS          = ON
+ OUTGEOMFILETYPE  = 0
+ SYSTEMSTATUS     = OFF
+ TOPTENGINE       = AUTO
+ TOPTXPRCSMODE    = 0
+ TRSLDDAMDATA     = OFF
+ TRSLDFGMDATA     = OFF
+ TRSLDISPDATA     = OFF
+ TRSLDMIDATA      = OFF
+ TRSLLOADDATA     = OFF
+ TRSLMODLDATA     = OFF
+ TRSLPRESDATA     = OFF
+ TRSLRBSEDATA     = OFF
+ TRSLSPCDATA      = OFF
+ TRSLSTRNDATA     = OFF
+ TRSLSTRSDATA     = OFF
+ TRSLTEMPDATA     = OFF
+ TRSLTOPTDATA     = OFF
+ TRSLTOQEDATA     = OFF
+ SHELLEGRID       = OFF
+ SOLIDEGRID       = OFF
+ WAITFORLICENSE   = 3
+ XYPLOTCSVOUT     = OFF
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     19
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   P A R A M E T E R   D E F I N I T I O N
+ 
+ 
+ 
+ ACBPRESSET       = 0
+ ACBREFPRES       = 0.000000E+00
+ ACBVC            = 0.000000E+00
+ ADAPTLNCONTACT   = ON
+ ADAPTTIMESTEP    = OFF
+ ADDNLTOQUADLOAD  = OFF
+ ADDPRESTRESS     = ON
+ ADDPSDAFREQ      = OFF
+ ALIGNEDGENODE    = OFF
+ ALPHA            = 0.000000E+00
+ ALTFAILINDEXFORM = OFF
+ AUTOBPD          = OFF
+ AUTOCORDROTATE   = ON
+ AUTOFIXELEMGEOM  = ON
+ AUTOFIXELEMSING  = OFF
+ AUTOFIXMODLSING  = OFF
+ AUTOFIXRIGIDELEM = ON
+ AUTOFIXRIGIDSPC  = OFF
+ AUTOFIXNLMAT     = ON
+ AUTOSPC          = OFF
+ BARDKMETHOD      = BOTH
+ BAREQVLOAD       = ON
+ BETA             = 0.000000E+00
+ BISECT           = OFF
+ BOLTPRELOADTOL   = 0.000000E+00
+ BPDEFDIAG        = 0.000000E+00
+ CB1              = 1.000000E+00
+ CB2              = 1.000000E+00
+ CK1              = 1.000000E+00
+ CK2              = 1.000000E+00
+ CLOSE            = 1.000000E+00
+ CM1              = 1.000000E+00
+ CM2              = 1.000000E+00
+ COMPCONNECTOUT   = OFF
+ COMPE1RSF        = DISABLE
+ COMPE2RSF        = DISABLE
+ COMPE3RSF        = DISABLE
+ COMPG12RSF       = DISABLE
+ COMPG23RSF       = DISABLE
+ COMPG31RSF       = DISABLE
+ COMPILSMETHOD    = COMPONENT
+ COMPK1           = AUTO
+ COMPK2           = AUTO
+ COMPRSLTOUT      = ON
+ CONTACTGEN       = DISABLE
+ CONTACTTOL       = AUTO
+ CONTACTSTAB      = OFF
+ CONVMATRIX       = OFF
+ COUPMASS         = OFF
+ CP1              = 1.000000E+00
+ CP2              = 1.000000E+00
+ CYSYMGEN         = 0
+ CYSYMGENCORD     = 0
+ CYSYMTOL         = 1.000000E-10
+ DATABASEACCEL    = ON
+ DDAMPHASE        = 0
+ DELTASTRAINEGOUT = OFF
+ DESIGNCHECK      = OFF
+ DFREQ            = 1.000000E-05
+ DIRSTRESSTYPE    = 0
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     20
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   P A R A M E T E R   D E F I N I T I O N
+ 
+ 
+ 
+ DISPGEOMSFACT    = 1.000000E+00
+ DMILABEL         =
+ DMIPDIAG         = OFF
+ DYNLMDIRECTDIF   = OFF
+ DYNRESPEIGVOUT   = OFF
+ DYNSOLACCEL      = ON
+ DYNSOLDIRECTINT  = ON
+ DYNSOLRELGRID    = 0
+ EDGENODETOL      = AUTO
+ EIGENFLEXFREQ    = 1.000000E-01
+ EIGENSHIFTSFACT  = 1.000000E+04
+ EIGENSOLACCEL    = ON
+ ELEMGEOMCHECKS   = OFF
+ ELEMGEOMFATAL    = OFF
+ ELEMGEOMOUT      = OFF
+ ELEMRSLTCORD     = MATERIAL
+ ELEMRSLTMAXTYPE  = MAXCORNER
+ EMODES           = 30
+ ENHCBARRSLT      = OFF
+ ENHCCONTACTRSLT  = OFF
+ ENHCQUADRSLT     = OFF
+ EPSILONFLOAT     = 1.000000E-15
+ EQVSTRESSTYPE    = 0
+ FACTDIAG         = 1.000000E-10
+ FACTRATIOTOL     = 1.000000E+05
+ FIXNLTOQUAD      = ON
+ FLOATINZERO      = 1.000000E-15
+ FLOATOUTZERO     = 1.000000E-15
+ FREQRESPRSLTINCR = 10
+ FREQRESPRSLTOUT  = ON
+ G                = 0.000000E+00
+ GPFORCEMETHOD    = NASTRAN
+ GPRSLTAVEMETHOD  = INVARIANT
+ GPSTRESS         = ON
+ GPWEIGHT         = ON
+ GRDPNT           = 0
+ GRIDCOLTOL       = 0.000000E+00
+ GRIDTEMPASGN     = OFF
+ GRIDTEMPAVE      = OFF
+ HEXARTOL         = 1.000000E+02
+ HEXENODE         = OFF
+ HEXFACEMAXIATOL  = 1.650000E+02
+ HEXFACEMINIATOL  = 2.500000E+01
+ HEXFACESKEWTOL   = 6.500000E+01
+ HEXFACETAPERTOL  = 7.500000E-01
+ HEXFACEWARPTOL   = 4.500000E+01
+ HEXINODE         = OFF
+ HEXMAXEPADTOL    = 3.000000E+01
+ HEXMINEPLRTOL    = 5.000000E-01
+ HEXREDORD        = ON
+ HFREQ            = 1.000000E+30
+ HPNLMATREDORD    = AUTO
+ HPNLMATSFACT     = AUTO
+ INERTIALRELIEF   = OFF
+ INITSLINEKSFACT  = 1.000000E-02
+ INITSTRAINSFACT  = 1.000000E+00
+ INITSTRESSSFACT  = 1.000000E+00
+ J4ROT            = AUTO
+ KDAMP            = 1
+ K6ROT            = 1.000000E+02
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     21
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   P A R A M E T E R   D E F I N I T I O N
+ 
+ 
+ 
+ KRIGIDELEM       = 2.159732E+12
+ LANCZOSVECT      = OFF
+ LANGLE           = GIMBAL
+ LARC02TSAITOL    = 2.000000E+00
+ LFREQ            = 0.000000E+00
+ LGDISP           = 0
+ LINEARCONTACT    = OFF
+ LMODES           = 0
+ LNCONTACTITERTOL = 1.000000E-02
+ M6ROT            = 0.000000E+00
+ MATGEN           = OFF
+ MAXADJEDGE       = 100
+ MAXBISECTRESTART = OFF
+ MAXEIGENRESTART  = 5
+ MAXELEMGEOMMSG   = 10000
+ MAXIMPACTSTEP    = 0
+ MAXINCREFSTRAINP = AUTO
+ MAXLNCONTACTITER = -1
+ MAXITERRESTART   = 5
+ MAXSPARSEITER    = AUTO
+ MAXSRITER        = 100
+ MAXTOPTITER      = 200
+ MECHSTRAIN       = OFF
+ MINSPARSEITER    = 50
+ MODALDATABASE    = DELETE
+ MODEFSPCSTORE    = ON
+ MODEPFACTOR      = ON
+ MODEVAROUT       = OFF
+ MODLSTAB         = OFF
+ NBEAMINTNODE     = 2
+ NCBMODE          = 1
+ NCONTACTGEOMITER = 1
+ NDAMP            = 1.000000E-02
+ NITERCUPDATE     = AUTO
+ NITERKSUPDATE    = 3
+ NITERLCUPDATE    = 10
+ NITERMUPDATE     = 3
+ NITERPFUPDATE    = 1
+ NITERSUPDATE     = 8
+ NLAYERS          = 1
+ NLCOMPPLYFAIL    = OFF
+ NLINDATABASE     = DELETE
+ NLINDATALOADSF   = AUTO
+ NLINSOLACCEL     = 4
+ NLINSOLTOL       = 2
+ NLKDIAGAFACT     = 0.000000E+00
+ NLKDIAGCOMP      = 123456
+ NLKDIAGMINAFACT  = 0.000000E+00
+ NLKDIAGSET       = 0
+ NLLSSTRAINTYPE   = LOG
+ NLLSSTRESSTYPE   = CAUCHY
+ NLMATSFACT       = AUTO
+ NLMATTABLGEN     = 0.000000E+00
+ NLNPDKRESET      = OFF
+ NLSUBCREINIT     = OFF
+ NLTOL            = 2
+ NLTOQUAD         = ON
+ NLTRUESTRESS     = OFF
+ NOCOMPS          = OFF
+ NRBCHECKMODES    = 0
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     22
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   P A R A M E T E R   D E F I N I T I O N
+ 
+ 
+ 
+ NSLINEPSURFDIV   = 1
+ NSUBINCRBISECT   = 200
+ NTOPTLPSLEVEL    = 0
+ NTOPTSTRESSDIV   = -1
+ OPTION           = ABS
+ OUTSETTOL        = 1.000000E-05
+ PARTGEOMOUT      = ON
+ PARTMASSOUT      = OFF
+ PCGLSSDMI        = OFF
+ PENTARTOL        = 1.000000E+02
+ PENTEGRID        = OFF
+ PENTFACEMAXIATOL = 1.650000E+02
+ PENTFACEMINIATOL = 2.500000E+01
+ PENTFACESKEWTOL  = 6.500000E+01
+ PENTFACETAPERTOL = 7.500000E-01
+ PENTFACEWARPTOL  = 4.500000E+01
+ PENTMAXEPADTOL   = 3.000000E+01
+ PENTMINEPLRTOL   = 5.000000E-01
+ PENTREDORD       = ON
+ PRGPST           = OFF
+ PYRARTOL         = 1.000000E+02
+ PYREGRID         = OFF
+ PYRFACEMAXIATOL  = 1.700000E+02
+ PYRFACEMINIATOL  = 5.000000E+00
+ PYRFACESKEWTOL   = 8.000000E+01
+ PYRFACETAPERTOL  = 7.500000E-01
+ PYRFACEWARPTOL   = 4.500000E+01
+ PYRMAXEPADTOL    = 3.500000E+01
+ PYRMINEPLRTOL    = 5.000000E-01
+ PYRREDORD        = ON
+ QUADARTOL        = 1.000000E+02
+ QUADBNDREDORD    = ON
+ QUADELEMTYPE     = SRI
+ QUADEQVLOAD      = OFF
+ QUADINODE        = OFF
+ QUADMAXEPADTOL   = 3.000000E+01
+ QUADMAXIATOL     = 1.650000E+02
+ QUADMEMREDORD    = ON
+ QUADMINEPLRTOL   = 5.000000E-01
+ QUADMINIATOL     = 2.500000E+01
+ QUADRNODE        = OFF
+ QUADSECT         = OFF
+ QUADSKEWTOL      = 6.500000E+01
+ QUADTAPERTOL     = 7.500000E-01
+ QUADWARPLIMIT    = 4.500000E+01
+ QUADWARPTOL      = 4.500000E+01
+ RADMATRIX        = ON
+ RANDRESPINVLEVEL = 1
+ RANDRESPRSLTOUT  = OFF
+ RBCHECKLEVEL     = 0
+ RBCHECKMODES     = 0
+ RESEQGRID        = OFF
+ RESEQGRIDMETHOD  = AUTO
+ RESEQSTARTGRID   = 0
+ RESVEC           = OFF
+ RESVPGF          = 1.000000E-06
+ RIGIDBODYMODE    = AUTO
+ RIGIDELEM2ELAS   = OFF
+ RIGIDELEMCORD    = AUTO
+ RIGIDELEMTYPE    = RBE
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     23
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   P A R A M E T E R   D E F I N I T I O N
+ 
+ 
+ 
+ ROTINERTIA       = ON
+ RSPECTRA         = OFF
+ RSLTDATABASE     = DELETE
+ RSLTFILECOMP     = ON
+ SCRSPEC          = OFF
+ SHEARELEMTYPE    = NASTRAN
+ SHELLTVSMATTYPE  = FLEXIBLE
+ SIGMA            = 0.000000E+00
+ SKINGEN          = DISABLE
+ SLINE2RIGIDELEM  = OFF
+ SLINEEDGENORMTOL = 6.000000E+01
+ SLINEFACENORMTOL = 3.000000E+01
+ SLINEFSLIPK      = DIAGONAL
+ SLINEKAVG        = OFF
+ SLINEKSFACT      = 1.000000E+00
+ SLINEKSFACT2TC   = OFF
+ SLINEMAXACTCORD  = 0
+ SLINEMAXACTDIR   = XYZ
+ SLINEMAXACTDIST  = AUTO
+ SLINEMAXACTRATIO = 0.000000E+00
+ SLINEMAXACTWIDTH = AUTO
+ SLINEMAXDISPTOL  = 1.000000E-04
+ SLINEMAXPENDIST  = AUTO
+ SLINEOFFSETTOL   = AUTO
+ SLINEOPENKSFACT  = 1.000000E-10
+ SLINEPENTOL      = 2.000000E-01
+ SLINEPNODEOPTION = BOTH
+ SLINEPOSTOL      = 1.000000E-02
+ SLINEPROTOL      = AUTO
+ SLINEPLANEZDIR   = 3
+ SLINESLIDETYPE   = DYNAMIC
+ SLINESTABKSFACT  = 0.000000E+00
+ SLINESTABOPTION  = 0
+ SLINESTRESSLOC   = PRIMARY
+ SLINEUNLOADTOL   = 1.000000E-10
+ SOLIDGEN         = DISABLE
+ SOLIDGENEXTDIR   = POSITIVE
+ SOLIDNODENORMTOL = 6.000000E+01
+ SOLUTIONERROR    = OFF
+ SORTMODEMASS     = ON
+ SPARSEITERMETHOD = PRIMAL
+ SPARSEITERMODE   = 3
+ SPARSEITERTOL    = 1.000000E-05
+ SPARSEMETHOD     = SOLID
+ SPCGEN           = OFF
+ STIFFRATIOTOL    = 1.000000E-08
+ STIFFZEROTOL     = 1.000000E-15
+ STRENGTHRATIO    = OFF
+ STRESSERROR      = ON
+ TABS             = 0.000000E+00
+ TETARTOL         = 1.000000E+02
+ TEMPDEPCOMP      = OFF
+ TETEGRID         = OFF
+ TETFACEMAXIATOL  = 1.790000E+02
+ TETFACEMINIATOL  = 1.000000E+00
+ TETFACESKEWTOL   = 8.900000E+01
+ TETINODE         = OFF
+ TETMAXEPADTOL    = 3.000000E+01
+ TETMINEPLRTOL    = 5.000000E-01
+ TETREDORD        = ON
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     24
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   P A R A M E T E R   D E F I N I T I O N
+ 
+ 
+ 
+ TOPTACITERSOLTOL = 1.000000E-04
+ TOPTACTHRESHOLD  = -1.000000E+00
+ TOPTALMMETHOD    = 1
+ TOPTALMSPSFACT   = 5.000000E-01
+ TOPTBTHRESHOLD   = 5.000000E-01
+ TOPTCOMPINDEX    = 1.000000E+10
+ TOPTDATABASE     = ITER
+ TOPTDEPXITER     = AUTO
+ TOPTDESIGNCONSTR = 1.000000E+10
+ TOPTDESIGNMODE   = ACCURACY
+ TOPTDESIGNREGION = 1
+ TOPTDESIGNTOL    = -1.000000E+00
+ TOPTDTHRESHOLD   = 1.000000E-03
+ TOPTELEMEXTTOL   = 1.000000E-02
+ TOPTELEMSYMTOL   = 1.000000E-02
+ TOPTGEN          = DISABLE
+ TOPTGLBDMETHOD   = 3
+ TOPTGLBSMETHOD   = 3
+ TOPTITERSOLMODE  = AUTO
+ TOPTITERTOL      = -1.000000E+00
+ TOPTMANCONSTR    = DISABLE
+ TOPTMANCORD      = 0
+ TOPTMANDIR       = XY
+ TOPTMAXACTDIST   = 0.000000E+00
+ TOPTMAXALPHA     = AUTO
+ TOPTMAXBETA      = AUTO
+ TOPTMAXDELTAOBJ  = -1.000000E+00
+ TOPTMAXGRAYSCALE = -1.000000E+00
+ TOPTMAXPNORMEXP  = 0.000000E+00
+ TOPTMINADJVF     = 5.000000E-02
+ TOPTMINESHLTHK   = 0.000000E+00
+ TOPTSOLACCEL     = OFF
+ TOPTSTRESSTOL    = 4.000000E-03
+ TOPTSTRESSTYPE   = 1
+ TOPTTDMAXEPSILON = 5.000000E-01
+ TRIARTOL         = 1.000000E+02
+ TRIBNDEDORD      = ON
+ TRIELEMTYPE      = DKT
+ TRIEQVLOAD       = OFF
+ TRIINODE         = OFF
+ TRIMAXEPADTOL    = 3.000000E+01
+ TRIMAXIATOL      = 1.700000E+02
+ TRIMEMREDORD     = ON
+ TRIMINEPLRTOL    = 5.000000E-01
+ TRIMINIATOL      = 1.000000E+01
+ TRIRNODE         = OFF
+ TRISKEWTOL       = 6.500000E+01
+ TSAI2LARC02      = ON
+ TSAI2MCT         = OFF
+ TSAI2MCTBVF      = AUTO
+ TSAI2MCTFVF      = AUTO
+ UNITS            = M---
+ UNRESEQGRID      = ON
+ VFM2ACB          = OFF
+ VFMADDMETHOD     = ASSEMBLY
+ VFMINTERACTTOL   = 1.000000E-10
+ VFMNORMTOL       = 3.000000E+01
+ VOXELMESH        = OFF
+ USAWETSURFACE    = 0
+ W3               = 0.000000E+00
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     25
+ 
+ 
+ 
+ 
+                                      A N A L Y S I S   P A R A M E T E R   D E F I N I T I O N
+ 
+ 
+ 
+ W4               = 0.000000E+00
+ WARNING          = ON
+ WTMASS           = 1.000000E+00
+ WTMASSMETHOD     = NORAN
+ XDAMP            = ON
+ ZERONPDELEMMASS  = OFF
+ ZONADATAOUT      = OFF
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ LINEAR STATICS                                                         03/05/26  01:10  ADS NASTRAN VERSION 20.2.0.23   PAGE     26
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ MODEL ANALYSIS TIME SUMMARY
+ 
+ TOTAL CPU TIME = 3.71 SECONDS
+ WALLCLOCK TIME = 0.69 SECONDS
+ 
+ EXECUTION TERMINATED NORMALLY
+ 
+ TOTAL WARNINGS     = 0
+ TOTAL FATAL ERRORS = 0
+ 
+ 
+ 
+ 
+ 
+ 
+
