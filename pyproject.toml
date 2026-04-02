@@ -27,6 +27,9 @@ dependencies = [
     "boto3>=1.40.49",
     "plotly>=6.5.2",
     "sympy>=1.14.0",
+    "scikit-fem>=12.0.1",
+    "fastf1>=3.8.2",
+    "seaborn>=0.13.2",
 ]
 
 [project.optional-dependencies]
@@ -70,6 +73,7 @@ docs = [
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]
 python_files = "test_*.py"
 python_classes = "Test*"
 python_functions = "test_*"
