@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>particle-cfd triple-decker (spec-driven sketch)</title>
+<style>
+body{font-family:sans-serif;margin:12px;background:#111;color:#eee}
+canvas{background:#222;border:1px solid #444}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+label{font-size:12px}
+</style>
+</head>
+<body>
+<h2>particle simulator sketch</h2>
+<p style="font-size:12px;max-width:900px">
+same geometry constants as python (<code>PARTICLE_SPEC</code>). browser demo uses simplified
+dynamics (damped random walk + facade bias + reflection); aggregated npz trajectories come from
+<code>particle_sim.core.simulator</code> in python.
+</p>
+<canvas id="c" width="720" height="560"></canvas>
+<div class="row">
+<label>T_out <input type="range" id="tout" min="18" max="34" value="24"/></label>
+<label>wind m/s <input type="range" id="ws" min="0" max="80" value="25"/></label>
+<label>wind deg <input type="range" id="wd" min="0" max="360" value="225"/></label>
+<label>open <input type="range" id="op" min="0" max="100" value="100"/></label>
+<button id="go">restart</button>
+</div>
+<script>
+const PARTICLE_SPEC = {"generator":"particle_sim_v0","geometry":{"long_m":12,"wide_m":7,"ceiling_m":3,"floor_gap_m":3,"n_floors":3,"zone_order":["floor1_front","floor1_back","floor2_front","floor2_back","floor3_front","floor3_back"],"facade_azimuth_deg":{"front":180,"back":0}},"numerics":{"dt_sim":10,"dt_output":600,"n_particles_per_zone":300,"k_rep":2,"r_cut":1,"damping_coeff":0.2,"v_max":5,"buoyancy_strength":0.15,"forcing_layer_depth":0.5,"thermal_layer_depth":0.3,"rho_air":1.2,"cp_air":1005,"passage_window":1,"passage_doorway":1,"passage_crack":0.3},"physics":{"h_int":7.7,"c_wall_j_per_k":4800000,"c_mass_j_per_k":4800000,"ua_out_w_per_k":16,"h_a_mass_w_per_k":120}};
+const W = 12, Hj = 7, GAP = 3;
+const rects = [];
+for(let f=0;f<3;f++){
+  const fy = f*(Hj+GAP);
+  rects.push([0,fy,12,fy+3.5],[0,fy+3.5,12,fy+7]);
+}
+const N = 600;
+let px=[],py=[],vx=[],vy=[],T=[],zi=[],rng=()=>Math.random();
+function col(t){const u=(t-18)/16;return `rgb(${255*u},${80*(1-u)},${255*(1-u)})`;}
+function setup(){
+  px=[];py=[];vx=[];vy=[];T=[];zi=[];
+  for(let i=0;i<N;i++){
+    const z=i%6;
+    const r=rects[z];
+    px.push(r[0]+0.1+(r[2]-r[0]-0.2)*rng());
+    py.push(r[1]+0.1+(r[3]-r[1]-0.2)*rng());
+    vx.push(0);vy.push(0);T.push(24);zi.push(z);
+  }
+}
+function step(){
+  const tout=+toutEl.value, ws=wsEl.value/10, wd=wdEl.value*Math.PI/180;
+  const op=opEl.value/100;
+  const cpf=Math.cos(wd-Math.PI), cpb=Math.cos(wd);
+  const vdF=Math.sign(cpf)*Math.sqrt(Math.abs(cpf)+1e-3)*ws*0.35*op;
+  const vdB=Math.sign(cpb)*Math.sqrt(Math.abs(cpb)+1e-3)*ws*0.35*op;
+  const dt=0.05;
+  for(let i=0;i<N;i++){
+    let z=zi[i],r=rects[z];
+    if(z%2===0) vy[i]+=vdF*dt; else vy[i]-=vdB*dt;
+    vx[i]+=(rng()-0.5)*0.08; vy[i]+=(rng()-0.5)*0.08;
+    vx[i]*=Math.exp(-0.2*dt); vy[i]*=Math.exp(-0.2*dt);
+    const sp=Math.hypot(vx[i],vy[i]); if(sp>5){vx[i]*=5/sp;vy[i]*=5/sp;}
+    px[i]+=vx[i]*dt; py[i]+=vy[i]*dt;
+    if(px[i]<r[0]){px[i]=r[0];vx[i]=Math.abs(vx[i])}
+    if(px[i]>r[2]){px[i]=r[2];vx[i]=-Math.abs(vx[i])}
+    if(py[i]<r[1]){py[i]=r[1];vy[i]=Math.abs(vy[i])}
+    if(py[i]>r[3]){py[i]=r[3];vy[i]=-Math.abs(vy[i])}
+    T[i]+=0.015*(tout-T[i])*dt;
+  }
+}
+const canvas=document.getElementById("c");
+const ctx=canvas.getContext("2d");
+const toutEl=document.getElementById("tout");
+const wsEl=document.getElementById("ws");
+const wdEl=document.getElementById("wd");
+const opEl=document.getElementById("op");
+document.getElementById("go").onclick=()=>setup();
+function draw(){
+  ctx.fillStyle="#222";ctx.fillRect(0,0,canvas.width,canvas.height);
+  const sx=canvas.width/W, sy=canvas.height/(3*(Hj+GAP));
+  rects.forEach((r,i)=>{
+    ctx.strokeStyle=i%2?"#888":"#aaa";
+    ctx.lineWidth=2;
+    ctx.strokeRect(r[0]*sx,r[1]*sy,(r[2]-r[0])*sx,(r[3]-r[1])*sy);
+  });
+  for(let i=0;i<N;i++){
+    ctx.fillStyle=col(T[i]);
+    ctx.fillRect(px[i]*sx-1, py[i]*sy-1, 2.5, 2.5);
+  }
+}
+function loop(){for(let k=0;k<3;k++)step();draw();requestAnimationFrame(loop);}
+setup(); loop();
+</script>
+</body>
+</html>

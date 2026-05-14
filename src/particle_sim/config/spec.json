@@ -1,0 +1,44 @@
+{
+  "generator": "particle_sim_v0",
+  "geometry": {
+    "long_m": 12.0,
+    "wide_m": 7.0,
+    "ceiling_m": 3.0,
+    "floor_gap_m": 3.0,
+    "n_floors": 3,
+    "zone_order": [
+      "floor1_front",
+      "floor1_back",
+      "floor2_front",
+      "floor2_back",
+      "floor3_front",
+      "floor3_back"
+    ],
+    "facade_azimuth_deg": { "front": 180, "back": 0 }
+  },
+  "numerics": {
+    "dt_sim": 10.0,
+    "dt_output": 600.0,
+    "n_particles_per_zone": 300,
+    "k_rep": 2.0,
+    "r_cut": 1.0,
+    "damping_coeff": 0.2,
+    "v_max": 5.0,
+    "buoyancy_strength": 0.15,
+    "forcing_layer_depth": 0.5,
+    "thermal_layer_depth": 0.3,
+    "rho_air": 1.2,
+    "cp_air": 1005.0,
+    "passage_window": 1.0,
+    "passage_doorway": 1.0,
+    "passage_crack": 0.3
+  },
+  "physics": {
+    "h_int": 7.7,
+    "c_wall_j_per_k": 4800000.0,
+    "c_mass_j_per_k": 4800000.0,
+    "ua_out_w_per_k": 16.0,
+    "h_a_mass_w_per_k": 120.0
+  },
+  "linkage_order_note": "per floor: window_front, window_back, crack_front, crack_back, doorway; sign positive is endpoint_a to endpoint_b"
+}
