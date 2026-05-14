@@ -66,6 +66,27 @@ class PDESolverConfig(BaseModel):
     max_inner_T_adv: float = 2.5
 
 
+class ParticleConfig(BaseModel):
+    """lagrangian ensemble for steady temperature field."""
+
+    model_config = ConfigDict(frozen=True)
+
+    n_particles: int = Field(default=20_000, ge=16)
+    dt: float = Field(default=0.05, gt=0.0)
+    n_steps_spinup: int = Field(default=4_000, ge=0)
+    n_steps_average: int = Field(default=2_000, ge=1)
+    T_L: float = Field(default=2.0, gt=0.0)
+    # scales random velocity kicks relative to |u_mean|
+    turbulent_intensity: float = Field(default=0.12, ge=0.0)
+    # blend particle velocity toward mean wind each step
+    velocity_relax: float = Field(default=0.12, ge=0.0, le=1.0)
+    # when nudged onto windward facade, relax T toward T_facade_hot
+    thermal_relax_facade: float = Field(default=0.15, ge=0.0, le=1.0)
+    thermal_relax_other: float = Field(default=0.08, ge=0.0, le=1.0)
+    seed: int = 0
+    use_pde_wind: bool = True
+
+
 class SurrogateConfig(BaseModel):
     """neural surrogate (phase 2)."""
 
