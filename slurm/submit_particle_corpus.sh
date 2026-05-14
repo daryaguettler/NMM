@@ -14,6 +14,7 @@
 #   SHARDS_ROOT       default: ~/orcd/scratch/nmm_corpus_shards
 #   CORPUS_OUT        default: ~/orcd/scratch/nmm_corpus/v0_particle
 #   GLOBAL_SEED, PARTICLES, DURATION_HOURS  passed to build_corpus_cluster
+#   CORPUS_PYTHON     optional absolute path to python (uv not on compute PATH)
 #
 #   SLURM_TIME_SHARD, SLURM_TIME_MERGE  optional sbatch --time override (production)
 #   (test mode always passes short --time unless SLURM_TIME_SHARD_TEST / SLURM_TIME_MERGE_TEST set)
@@ -25,6 +26,15 @@ set -euo pipefail
 
 REPO_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 export REPO_DIR
+
+for _need in \
+  "$REPO_DIR/slurm/run_corpus_shard.sbatch" \
+  "$REPO_DIR/slurm/run_corpus_merge.sbatch" \
+  "$REPO_DIR/slurm/inc_env.sh" \
+  "$REPO_DIR/src/particle_sim"
+do
+  [[ -e "$_need" ]] || { echo "missing required path: $_need" >&2; exit 1; }
+done
 
 SHARDS_ROOT="${SHARDS_ROOT:-$HOME/orcd/scratch/nmm_corpus_shards}"
 CORPUS_OUT="${CORPUS_OUT:-$HOME/orcd/scratch/nmm_corpus/v0_particle}"
@@ -66,8 +76,11 @@ TOTAL_RUNS=$((NUM_SHARDS * RUNS_PER_SHARD))
 echo "shards=$NUM_SHARDS runs_per_shard=$RUNS_PER_SHARD total_runs=$TOTAL_RUNS"
 echo "shards_root=$SHARDS_ROOT  corpus_out=$CORPUS_OUT"
 
-EXPORT="ALL,REPO_DIR=$REPO_DIR,SHARDS_ROOT=$SHARDS_ROOT,CORPUS_OUT=$CORPUS_OUT,RUNS_PER_SHARD=$RUNS_PER_SHARD,GLOBAL_SEED=$GLOBAL_SEED,PARTICLES=$PARTICLES"
+EXPORT="ALL,REPO_DIR=$REPO_DIR,SHARDS_ROOT=$SHARDS_ROOT,CORPUS_OUT=$CORPUS_OUT"
+EXPORT="${EXPORT},NUM_SHARDS=$NUM_SHARDS,TOTAL_RUNS=$TOTAL_RUNS,RUNS_PER_SHARD=$RUNS_PER_SHARD"
+EXPORT="${EXPORT},GLOBAL_SEED=$GLOBAL_SEED,PARTICLES=$PARTICLES"
 [[ -n "${DURATION_HOURS:-}" ]] && EXPORT="${EXPORT},DURATION_HOURS=$DURATION_HOURS"
+[[ -n "${CORPUS_PYTHON:-}" ]] && EXPORT="${EXPORT},CORPUS_PYTHON=${CORPUS_PYTHON}"
 
 SHARD_EXTRA=()
 if (( TEST_MODE )); then
@@ -83,6 +96,10 @@ elif [[ -n "${SLURM_TIME_MERGE:-}" ]]; then
   MERGE_EXTRA+=(--time="$SLURM_TIME_MERGE")
 fi
 
+MERGE_EXPORT="ALL,REPO_DIR=$REPO_DIR,SHARDS_ROOT=$SHARDS_ROOT,CORPUS_OUT=$CORPUS_OUT"
+MERGE_EXPORT="${MERGE_EXPORT},NUM_SHARDS=$NUM_SHARDS,TOTAL_RUNS=$TOTAL_RUNS"
+[[ -n "${CORPUS_PYTHON:-}" ]] && MERGE_EXPORT="${MERGE_EXPORT},CORPUS_PYTHON=${CORPUS_PYTHON}"
+
 SHARD_SBATCH=(
   sbatch --parsable
   --chdir "$REPO_DIR"
@@ -93,15 +110,22 @@ SHARD_SBATCH=(
 )
 
 if (( DRY_RUN )); then
-  echo "dry-run: ${SHARD_SBATCH[*]}"
-  echo "then: sbatch ... --dependency=afterok:<shard_jobid> slurm/run_corpus_merge.sbatch"
+  echo "dry-run shard: ${SHARD_SBATCH[*]}"
+  echo "dry-run merge (substitute <shard_jobid>):"
+  echo "  sbatch --parsable --chdir \"$REPO_DIR\" \\"
+  echo "    --dependency=afterok:<shard_jobid> --export \"$MERGE_EXPORT\" \\"
+  if ((${#MERGE_EXTRA[@]} > 0)); then
+    _mextra=""
+    for _x in "${MERGE_EXTRA[@]}"; do _mextra+=" ${_x}"; done
+    echo "    ${_mextra# } \\"
+  fi
+  echo "    \"$REPO_DIR/slurm/run_corpus_merge.sbatch\""
   exit 0
 fi
 
 SHARD_JOB="$("${SHARD_SBATCH[@]}")"
 echo "submitted shard array: $SHARD_JOB  (tasks 0-${ARRAY_MAX})"
 
-MERGE_EXPORT="ALL,REPO_DIR=$REPO_DIR,SHARDS_ROOT=$SHARDS_ROOT,CORPUS_OUT=$CORPUS_OUT"
 MERGE_SBATCH=(
   sbatch --parsable
   --chdir "$REPO_DIR"
@@ -114,4 +138,4 @@ MERGE_SBATCH=(
 MERGE_JOB="$("${MERGE_SBATCH[@]}")"
 echo "submitted merge (after array): $MERGE_JOB"
 echo "merged corpus → $CORPUS_OUT"
-echo "logs: $REPO_DIR/slurm/logs/corpus_shard_${SHARD_JOB}_*.out"
+echo "logs: $REPO_DIR/slurm/logs/corpus_shard_${SHARD_JOB}_*.out|err  corpus_merge_${MERGE_JOB}.out|err"
