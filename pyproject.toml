@@ -30,6 +30,13 @@ dependencies = [
     "scikit-fem>=12.0.1",
     "fastf1>=3.8.2",
     "seaborn>=0.13.2",
+    "cma>=4.4.4",
+    "jax>=0.10.0",
+    "optax>=0.2.0",
+    "torch>=2.11.0",
+    "flax>=0.12.7",
+    "gymnasium>=1.3.0",
+    "stable-baselines3>=2.9.0a2",
 ]
 
 [project.optional-dependencies]
@@ -135,6 +142,8 @@ ignore = [
 
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101"]
+"src/surrogate/**" = ["D101", "D102", "D103", "S101", "TRY003", "SIM108"]
+"tests/test_surrogate_*.py" = ["S101", "D103"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
