@@ -2,14 +2,15 @@
 #SBATCH -p mit_normal
 #SBATCH -c 4
 #SBATCH --mem=8G
-#SBATCH -t 24:00:00
+#SBATCH -t 12:00:00
 #SBATCH -J nmm-corpus-shard
 #SBATCH -o slurm/logs/corpus_shard_%A_%a.out
 #SBATCH -e slurm/logs/corpus_shard_%A_%a.err
 #
 # one array task = one shard (disjoint run_id range).
 # mem: default corpus uses ~6 zones * 300 particles (numpy); stays well under 8G.
-# time: default ~50 runs * full trajectory (168h sim @ 600s output); allow 24h on shared nodes.
+# time: 12h default (mit_normal often rejects >12h). for ~50 full runs you may need
+#   a longer queue or sbatch --time=... / see SLURM_TIME_SHARD in submit_particle_corpus.sh.
 #   raise if you increase --runs-per-shard, PARTICLES, or DURATION_HOURS.
 # required env (set by submit_particle_corpus.sh or export before sbatch):
 #   REPO_DIR, SHARDS_ROOT, RUNS_PER_SHARD

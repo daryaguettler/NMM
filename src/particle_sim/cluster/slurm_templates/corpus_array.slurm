@@ -2,7 +2,7 @@
 #SBATCH -p mit_normal
 #SBATCH -c 4
 #SBATCH --mem=8G
-#SBATCH -t 24:00:00
+#SBATCH -t 12:00:00
 #SBATCH -J pcf-corpus
 #SBATCH --array=0-9
 #SBATCH -o slurm/logs/corpus_%A_%a.out

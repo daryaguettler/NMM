@@ -15,8 +15,11 @@
 #   CORPUS_OUT        default: ~/orcd/scratch/nmm_corpus/v0_particle
 #   GLOBAL_SEED, PARTICLES, DURATION_HOURS  passed to build_corpus_cluster
 #
-# sbatch time/mem in slurm/run_corpus_shard.sbatch assume defaults (~50 runs/shard,
-# ~168h sim, 300 particles, 24h wall). edit those #SBATCH lines if you scale up.
+#   SLURM_TIME_SHARD, SLURM_TIME_MERGE  optional sbatch --time override (production)
+#   (test mode always passes short --time unless SLURM_TIME_SHARD_TEST / SLURM_TIME_MERGE_TEST set)
+#
+# sbatch time in slurm/run_corpus_shard.sbatch is 12h (mit_normal rejects many >24h requests).
+# increase via env or edit .sbatch if your partition allows longer jobs.
 #===============================================================
 set -euo pipefail
 
@@ -66,11 +69,26 @@ echo "shards_root=$SHARDS_ROOT  corpus_out=$CORPUS_OUT"
 EXPORT="ALL,REPO_DIR=$REPO_DIR,SHARDS_ROOT=$SHARDS_ROOT,CORPUS_OUT=$CORPUS_OUT,RUNS_PER_SHARD=$RUNS_PER_SHARD,GLOBAL_SEED=$GLOBAL_SEED,PARTICLES=$PARTICLES"
 [[ -n "${DURATION_HOURS:-}" ]] && EXPORT="${EXPORT},DURATION_HOURS=$DURATION_HOURS"
 
+SHARD_EXTRA=()
+if (( TEST_MODE )); then
+  SHARD_EXTRA+=(--time="${SLURM_TIME_SHARD_TEST:-02:00:00}")
+elif [[ -n "${SLURM_TIME_SHARD:-}" ]]; then
+  SHARD_EXTRA+=(--time="$SLURM_TIME_SHARD")
+fi
+
+MERGE_EXTRA=()
+if (( TEST_MODE )); then
+  MERGE_EXTRA+=(--time="${SLURM_TIME_MERGE_TEST:-00:15:00}")
+elif [[ -n "${SLURM_TIME_MERGE:-}" ]]; then
+  MERGE_EXTRA+=(--time="$SLURM_TIME_MERGE")
+fi
+
 SHARD_SBATCH=(
   sbatch --parsable
   --chdir "$REPO_DIR"
   --array="0-${ARRAY_MAX}"
   --export="$EXPORT"
+  "${SHARD_EXTRA[@]}"
   "$REPO_DIR/slurm/run_corpus_shard.sbatch"
 )
 
@@ -89,6 +107,7 @@ MERGE_SBATCH=(
   --chdir "$REPO_DIR"
   --dependency="afterok:${SHARD_JOB}"
   --export="$MERGE_EXPORT"
+  "${MERGE_EXTRA[@]}"
   "$REPO_DIR/slurm/run_corpus_merge.sbatch"
 )
 

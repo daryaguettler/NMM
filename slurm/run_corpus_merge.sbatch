@@ -2,13 +2,13 @@
 #SBATCH -p mit_normal
 #SBATCH -c 2
 #SBATCH --mem=4G
-#SBATCH -t 01:00:00
+#SBATCH -t 00:30:00
 #SBATCH -J nmm-corpus-merge
 #SBATCH -o slurm/logs/corpus_merge_%j.out
 #SBATCH -e slurm/logs/corpus_merge_%j.err
 #
 # merge_shards: copies npz + merges manifest (I/O bound, low cpu/mem).
-# allow 1h for large corpora on shared filesystem.
+# 30m default; raise for huge corpora or slow FS.
 # required env: REPO_DIR, SHARDS_ROOT, CORPUS_OUT
 # submit after shard array: --dependency=afterok:<shard_jobid>
 
