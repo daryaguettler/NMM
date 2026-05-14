@@ -1,11 +1,14 @@
 #!/bin/bash
-#SBATCH -J pcf-corpus
-#SBATCH -A YOUR_ACCOUNT
 #SBATCH -p mit_normal
+#SBATCH -c 4
+#SBATCH --mem=8G
+#SBATCH -t 24:00:00
+#SBATCH -J pcf-corpus
 #SBATCH --array=0-9
-#SBATCH -c 8
-#SBATCH --time=04:00:00
-#SBATCH -o logs/corpus_%A_%a.out
+#SBATCH -o slurm/logs/corpus_%A_%a.out
+#SBATCH -e slurm/logs/corpus_%A_%a.err
+#
+# same scale as slurm/run_corpus_shard.sbatch (see comments there).
 
 set -euo pipefail
 cd "${SLURM_SUBMIT_DIR}"

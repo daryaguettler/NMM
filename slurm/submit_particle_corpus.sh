@@ -2,8 +2,7 @@
 #===============================================================
 # submit_particle_corpus.sh — Engaging/Slurm: shard array + merge
 #
-# usage:
-#   export SLURM_ACCOUNT=... SLURM_PARTITION=...   # your ORCD values
+# usage (partition/resources are in the .sbatch files, default mit_normal):
 #   bash slurm/submit_particle_corpus.sh
 #
 #   bash slurm/submit_particle_corpus.sh --num-shards 10 --runs-per-shard 50
@@ -15,6 +14,9 @@
 #   SHARDS_ROOT       default: ~/orcd/scratch/nmm_corpus_shards
 #   CORPUS_OUT        default: ~/orcd/scratch/nmm_corpus/v0_particle
 #   GLOBAL_SEED, PARTICLES, DURATION_HOURS  passed to build_corpus_cluster
+#
+# sbatch time/mem in slurm/run_corpus_shard.sbatch assume defaults (~50 runs/shard,
+# ~168h sim, 300 particles, 24h wall). edit those #SBATCH lines if you scale up.
 #===============================================================
 set -euo pipefail
 
@@ -43,11 +45,6 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ -z "${SLURM_ACCOUNT:-}" || -z "${SLURM_PARTITION:-}" ]]; then
-  echo "set SLURM_ACCOUNT and SLURM_PARTITION (ORCD) before submitting" >&2
-  exit 1
-fi
-
 if (( TEST_MODE )); then
   NUM_SHARDS=1
   RUNS_PER_SHARD=2
@@ -71,8 +68,6 @@ EXPORT="ALL,REPO_DIR=$REPO_DIR,SHARDS_ROOT=$SHARDS_ROOT,CORPUS_OUT=$CORPUS_OUT,R
 
 SHARD_SBATCH=(
   sbatch --parsable
-  -A "$SLURM_ACCOUNT"
-  -p "$SLURM_PARTITION"
   --chdir "$REPO_DIR"
   --array="0-${ARRAY_MAX}"
   --export="$EXPORT"
@@ -91,8 +86,6 @@ echo "submitted shard array: $SHARD_JOB  (tasks 0-${ARRAY_MAX})"
 MERGE_EXPORT="ALL,REPO_DIR=$REPO_DIR,SHARDS_ROOT=$SHARDS_ROOT,CORPUS_OUT=$CORPUS_OUT"
 MERGE_SBATCH=(
   sbatch --parsable
-  -A "$SLURM_ACCOUNT"
-  -p "$SLURM_PARTITION"
   --chdir "$REPO_DIR"
   --dependency="afterok:${SHARD_JOB}"
   --export="$MERGE_EXPORT"

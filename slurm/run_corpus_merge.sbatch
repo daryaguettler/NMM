@@ -1,13 +1,16 @@
 #!/bin/bash
-#SBATCH -J nmm-corpus-merge
-#SBATCH -c 1
+#SBATCH -p mit_normal
+#SBATCH -c 2
 #SBATCH --mem=4G
-#SBATCH --time=00:30:00
+#SBATCH -t 01:00:00
+#SBATCH -J nmm-corpus-merge
 #SBATCH -o slurm/logs/corpus_merge_%j.out
 #SBATCH -e slurm/logs/corpus_merge_%j.err
 #
+# merge_shards: copies npz + merges manifest (I/O bound, low cpu/mem).
+# allow 1h for large corpora on shared filesystem.
 # required env: REPO_DIR, SHARDS_ROOT, CORPUS_OUT
-# submit after all shard tasks:  --dependency=afterok:<shard_array_jobid>
+# submit after shard array: --dependency=afterok:<shard_jobid>
 
 set -euo pipefail
 

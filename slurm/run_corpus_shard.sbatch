@@ -1,18 +1,21 @@
 #!/bin/bash
-#SBATCH -J nmm-corpus-shard
+#SBATCH -p mit_normal
 #SBATCH -c 4
 #SBATCH --mem=8G
-#SBATCH --time=04:00:00
+#SBATCH -t 24:00:00
+#SBATCH -J nmm-corpus-shard
 #SBATCH -o slurm/logs/corpus_shard_%A_%a.out
 #SBATCH -e slurm/logs/corpus_shard_%A_%a.err
 #
 # one array task = one shard (disjoint run_id range).
+# mem: default corpus uses ~6 zones * 300 particles (numpy); stays well under 8G.
+# time: default ~50 runs * full trajectory (168h sim @ 600s output); allow 24h on shared nodes.
+#   raise if you increase --runs-per-shard, PARTICLES, or DURATION_HOURS.
 # required env (set by submit_particle_corpus.sh or export before sbatch):
 #   REPO_DIR, SHARDS_ROOT, RUNS_PER_SHARD
 # optional: GLOBAL_SEED, PARTICLES, DURATION_HOURS
 #
-# override account/partition on submit, e.g.:
-#   sbatch -A YOUR_ACCOUNT -p YOUR_PARTITION --array=0-9 slurm/run_corpus_shard.sbatch
+# override on submit if needed: sbatch --partition=... --array=0-9 ...
 
 set -euo pipefail
 
