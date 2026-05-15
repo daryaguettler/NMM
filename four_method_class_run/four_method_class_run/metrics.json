@@ -1,0 +1,12 @@
+{
+  "rmse_analytic_vs_pde_degC": 2.0879471907585136,
+  "max_abs_analytic_vs_pde_degC": 16.6491375660392,
+  "analytic_runtime_s": 0.0006769400206394494,
+  "pde_runtime_s": 2.6224572329665534,
+  "rmse_particles_vs_pde_degC": 1.2312457020301941,
+  "max_abs_particles_vs_pde_degC": 9.433305231429436,
+  "particles_runtime_s": 1.6443484220071696,
+  "rmse_surrogate_vs_pde_degC": 0.3623245267965586,
+  "max_abs_surrogate_vs_pde_degC": 6.401917745190726,
+  "surrogate_runtime_s": 0.33107833203393966
+}
