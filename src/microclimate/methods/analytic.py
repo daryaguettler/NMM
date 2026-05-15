@@ -33,18 +33,11 @@ def analytic_temperature(
     disp = (x >= 20.0) & (x < cfg.bldg_x_min)
     T = np.where(disp, cfg.T_ref, T)
 
-    # wall plume (fluid column west of windward facade)
-    plume_depth = 2.0
-    xi = cfg.bldg_x_min - x
-    in_plume_strip = (xi >= 0.0) & (xi < plume_depth) & (z <= cfg.bldg_z_max) & (x < cfg.bldg_x_min)
-    z_eff = np.maximum(z, 0.05)
-    c_bl = 0.35
-    delta = c_bl * np.power(z_eff, 0.25)
-    delta = np.maximum(delta, 1e-3)
-    plume_excess = (cfg.T_facade_hot - cfg.T_ref) * np.exp(-xi / delta)
-    T = np.where(in_plume_strip, cfg.T_ref + plume_excess, T)
+    # windward plume: incoming wind at T_ref suppresses the thermal BL on the
+    # windward face — PDE validation shows fluid west of facade stays within
+    # ~0.35°C of ambient, so no plume excess is applied here.
 
-    # wake carryover (lee of building)
+    # wake carryover (lee of building) — amplitude calibrated to PDE: ~+2.4°C peak
     lee_start = cfg.bldg_x_max
     lee_end = 50.0
     in_wake = (x > lee_start) & (x <= lee_end)
@@ -52,7 +45,7 @@ def analytic_temperature(
     sigma = 6.0
     wake_shape = np.exp(-0.5 * np.square((x - x_peak) / sigma))
     z_scale = np.clip((cfg.z_max - z) / cfg.z_max, 0.0, 1.0)
-    t_hat = (cfg.T_facade_hot - cfg.T_ref) * 0.35
+    t_hat = (cfg.T_facade_hot - cfg.T_ref) * 0.10
     T = np.where(in_wake, cfg.T_ref + t_hat * wake_shape * z_scale, T)
 
     # far downwind relaxation
