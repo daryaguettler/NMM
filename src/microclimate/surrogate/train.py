@@ -99,7 +99,7 @@ def train_surrogate(
         new_p = optax.apply_updates(p, updates)
         return new_p, os2, loss
 
-    hist: dict[str, list[float]] = {"train_loss": [], "val_loss": []}
+    hist: dict[str, list] = {"train_loss": [], "val_loss": [], "step": []}
     t0_wall = time.perf_counter()
 
     for it in range(int(cfg.n_iterations)):
@@ -192,6 +192,7 @@ def train_surrogate(
                 )
                 v_acc.append(float(vl))
             hist["val_loss"].append(float(np.mean(v_acc)))
+            hist["step"].append(int(it))
 
     wall = time.perf_counter() - t0_wall
     return {
@@ -211,12 +212,17 @@ def save_artifact(out_dir: Path, bundle: dict, cfg: SurrogateConfig) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     with (out_dir / "surrogate_params.pkl").open("wb") as f:
         pickle.dump(bundle["params"], f)
+    h = bundle["history"]
     meta = {
         "surrogate_config": json.loads(cfg.model_dump_json()),
         "layer_sizes": bundle["layer_sizes"],
         "activation": bundle["activation"],
         "scales": bundle["scales"],
-        "history_tail": {k: v[-5:] for k, v in bundle["history"].items()},
+        "history": {
+            "step": h.get("step", []),
+            "train_loss": h["train_loss"],
+            "val_loss": h["val_loss"],
+        },
         "wall_seconds": bundle["wall_seconds"],
     }
     (out_dir / "surrogate_meta.json").write_text(

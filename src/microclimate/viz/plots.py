@@ -134,3 +134,57 @@ def building_mask_simple(x_val: float, z_1d: np.ndarray, cfg: ProblemConfig) -> 
 
 def close_fig(fig: plt.Figure) -> None:
     plt.close(fig)
+
+
+def plot_surrogate_training_curves(
+    trials: Sequence[tuple[str, np.ndarray, np.ndarray, np.ndarray]],
+    out_path: Path | None = None,
+) -> plt.Figure:
+    """trials: (label, step_indices, train_loss, val_loss) per trained artifact."""
+    fig, axes = plt.subplots(1, 2, figsize=(9.0, 3.8), constrained_layout=True)
+    ax_t, ax_v = axes[0], axes[1]
+    for label, steps, tr, va in trials:
+        if steps.size == 0:
+            continue
+        ax_t.plot(steps, tr, label=label, linewidth=1.4)
+        ax_v.plot(steps, va, label=label, linewidth=1.4)
+    ax_t.set_xlabel("iteration")
+    ax_t.set_ylabel("train loss")
+    ax_t.set_title("training")
+    ax_t.legend(loc="best", fontsize=8)
+    ax_t.grid(True, alpha=0.35)
+    ax_v.set_xlabel("iteration")
+    ax_v.set_ylabel("val loss")
+    ax_v.set_title("validation")
+    ax_v.legend(loc="best", fontsize=8)
+    ax_v.grid(True, alpha=0.35)
+    if out_path is not None:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_path, dpi=160)
+    return fig
+
+
+def plot_surrogate_field_errors(
+    labels: Sequence[str],
+    rmse_deg: Sequence[float],
+    max_abs_deg: Sequence[float],
+    out_path: Path | None = None,
+) -> plt.Figure:
+    fig, axes = plt.subplots(1, 2, figsize=(8.0, 3.6), constrained_layout=True)
+    x = np.arange(len(labels))
+    axes[0].bar(x, rmse_deg, color="steelblue")
+    axes[0].set_xticks(x)
+    axes[0].set_xticklabels(list(labels), rotation=22, ha="right")
+    axes[0].set_ylabel("°C vs PDE")
+    axes[0].set_title("RMSE (fluid)")
+    axes[0].grid(True, axis="y", alpha=0.35)
+    axes[1].bar(x, max_abs_deg, color="coral")
+    axes[1].set_xticks(x)
+    axes[1].set_xticklabels(list(labels), rotation=22, ha="right")
+    axes[1].set_ylabel("°C vs PDE")
+    axes[1].set_title("max abs (fluid)")
+    axes[1].grid(True, axis="y", alpha=0.35)
+    if out_path is not None:
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        fig.savefig(out_path, dpi=160)
+    return fig
