@@ -215,3 +215,111 @@ def solve_particle_field(
         runtime_seconds=float(elapsed),
         config=cfg,
     )
+
+
+def sample_particle_trajectories(
+    cfg: ProblemConfig,
+    grid_cfg: GridConfig,
+    particle_cfg: ParticleConfig,
+    wind_field: TemperatureField | None,
+    *,
+    n_trace: int,
+    spinup_steps: int,
+    record_steps: int,
+    record_stride: int = 4,
+) -> dict[str, NDArray[np.floating[Any]]]:
+    """same integration as ``solve_particle_field``, record subset of particles for movies.
+
+    integrates ``spinup_steps + record_steps`` steps; saves every ``record_stride`` step
+    during the last ``record_steps`` only.
+    """
+    rng = np.random.default_rng(int(particle_cfg.seed))
+    ui = wi = None
+    if (
+        particle_cfg.use_pde_wind
+        and wind_field is not None
+        and wind_field.u is not None
+        and wind_field.w is not None
+    ):
+        ui, wi = _wind_interpolators(
+            np.asarray(wind_field.x_grid),
+            np.asarray(wind_field.z_grid),
+            np.asarray(wind_field.u),
+            np.asarray(wind_field.w),
+        )
+
+    n = int(n_trace)
+    px = rng.uniform(cfg.x_min + 1e-6, cfg.x_max - 1e-6, size=n).astype(np.float64)
+    pz = rng.uniform(cfg.z_min + 1e-6, cfg.z_max - 1e-6, size=n).astype(np.float64)
+    vx = np.zeros(n, dtype=np.float64)
+    vz = np.zeros(n, dtype=np.float64)
+    pT = np.full(n, cfg.T_ref, dtype=np.float64)
+    um0, wm0 = _sample_mean_wind(px, pz, cfg, ui, wi, particle_cfg.use_pde_wind)
+    vx[:] = um0
+    vz[:] = wm0
+
+    dt = float(particle_cfg.dt)
+    T_L = max(float(particle_cfg.T_L), 1e-6)
+    ti = float(particle_cfg.turbulent_intensity)
+    vrel = float(particle_cfg.velocity_relax)
+
+    total = int(spinup_steps) + int(record_steps)
+    rs = max(1, int(record_stride))
+    n_snaps = (int(record_steps) + rs - 1) // rs
+    out_x = np.zeros((n_snaps, n), dtype=np.float64)
+    out_z = np.zeros((n_snaps, n), dtype=np.float64)
+    out_T = np.zeros((n_snaps, n), dtype=np.float64)
+    snap_i = 0
+    rec_start = int(spinup_steps)
+
+    for step in range(total):
+        um, wm = _sample_mean_wind(px, pz, cfg, ui, wi, particle_cfg.use_pde_wind)
+        sigma = ti * np.maximum(np.abs(um), 0.4) * np.sqrt(dt / T_L)
+        vx += sigma * rng.standard_normal(n)
+        vz += sigma * rng.standard_normal(n)
+
+        vx = (1.0 - vrel) * vx + vrel * um
+        vz = (1.0 - vrel) * vz + vrel * wm
+
+        vz += cfg.g * cfg.beta * (pT - cfg.T_ref) * dt
+
+        px += vx * dt
+        pz += vz * dt
+
+        out_right = px > cfg.x_max
+        if np.any(out_right):
+            px[out_right] = cfg.x_min + 1e-3
+            pz[out_right] = rng.uniform(cfg.z_min + 1e-3, cfg.z_max - 1e-3, size=int(np.sum(out_right)))
+            pT[out_right] = cfg.T_ref
+            pz_or = pz[out_right]
+            vx[out_right] = _log_law_u_at_z(pz_or, cfg)
+            vz[out_right] = 0.0
+
+        px = np.clip(px, cfg.x_min + 1e-9, cfg.x_max - 1e-9)
+        pz = np.clip(pz, cfg.z_min + 1e-9, cfg.z_max - 1e-9)
+
+        left_out = px < cfg.x_min + 1e-6
+        if np.any(left_out):
+            pz_lo = pz[left_out]
+            pT[left_out] = cfg.T_ref
+            vx[left_out] = _log_law_u_at_z(pz_lo, cfg)
+            vz[left_out] = 0.0
+            px[left_out] = cfg.x_min + 1e-3
+
+        _escape_building_apply_thermal(px, pz, vx, vz, pT, cfg, particle_cfg)
+
+        if step >= rec_start:
+            off = step - rec_start
+            if off % rs == 0 and snap_i < n_snaps:
+                out_x[snap_i] = px.copy()
+                out_z[snap_i] = pz.copy()
+                out_T[snap_i] = pT.copy()
+                snap_i += 1
+
+    t_snap = (rec_start + np.arange(snap_i, dtype=np.float64) * rs) * dt
+    return {
+        "t": t_snap,
+        "px": out_x[:snap_i],
+        "pz": out_z[:snap_i],
+        "pT": out_T[:snap_i],
+    }
