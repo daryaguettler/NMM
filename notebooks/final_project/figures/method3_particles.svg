@@ -1,0 +1,87 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="700" height="240" viewBox="0 0 700 240">
+  <defs>
+    <radialGradient id="hot" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#c4322f"/>
+      <stop offset="100%" stop-color="#c4322f" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <style>
+    .lbl { font-family: -apple-system, sans-serif; font-size: 11px; fill: #222; }
+    .lblc { font-family: -apple-system, sans-serif; font-size: 11px; fill: #222; text-anchor: middle; }
+    .lblb { font-family: -apple-system, sans-serif; font-size: 12px; fill: #222; font-weight: 600; }
+    .eq { font-family: -apple-system, sans-serif; font-size: 11px; fill: #222; }
+  </style>
+
+  <text x="350" y="22" class="lblc" font-weight="600" font-size="13">Lagrangian particles advect, mix, exchange heat</text>
+
+  <!-- Domain -->
+  <rect x="40" y="50" width="380" height="170" fill="#f8f8f8" stroke="#333" stroke-width="1.5"/>
+  <!-- Building -->
+  <rect x="180" y="130" width="80" height="80" fill="#7a7a7a" stroke="#222" stroke-width="1.5"/>
+  <!-- Heated facade -->
+  <line x1="180" y1="130" x2="180" y2="210" stroke="#c4322f" stroke-width="4"/>
+
+  <!-- Particles: many small dots, with arrows showing trajectories -->
+  <g fill="#3a6d9d">
+    <!-- Inflow particles, cool (blue) -->
+    <circle cx="55" cy="80" r="2.5"/>
+    <circle cx="60" cy="120" r="2.5"/>
+    <circle cx="58" cy="155" r="2.5"/>
+    <circle cx="55" cy="180" r="2.5"/>
+    <circle cx="80" cy="95" r="2.5"/>
+    <circle cx="90" cy="140" r="2.5"/>
+    <circle cx="100" cy="170" r="2.5"/>
+    <circle cx="120" cy="110" r="2.5"/>
+    <circle cx="135" cy="160" r="2.5"/>
+    <circle cx="155" cy="100" r="2.5"/>
+  </g>
+  <!-- Particles near hot wall: warmer (red-orange) -->
+  <g fill="#d65a3a">
+    <circle cx="170" cy="200" r="2.5"/>
+    <circle cx="173" cy="180" r="2.5"/>
+    <circle cx="172" cy="160" r="2.5"/>
+    <circle cx="170" cy="140" r="2.5"/>
+    <circle cx="175" cy="120" r="2.5"/>
+    <circle cx="178" cy="100" r="2.5"/>
+    <circle cx="182" cy="80" r="2.5"/>
+  </g>
+  <!-- Particles in wake -->
+  <g fill="#e8a44a">
+    <circle cx="275" cy="110" r="2.5"/>
+    <circle cx="290" cy="135" r="2.5"/>
+    <circle cx="305" cy="155" r="2.5"/>
+    <circle cx="320" cy="120" r="2.5"/>
+    <circle cx="340" cy="140" r="2.5"/>
+    <circle cx="360" cy="165" r="2.5"/>
+    <circle cx="380" cy="125" r="2.5"/>
+    <circle cx="395" cy="100" r="2.5"/>
+  </g>
+
+  <!-- Inflow arrow -->
+  <path d="M 30 130 L 45 130" stroke="#3a6d9d" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="30" y="120" class="lbl" font-size="10">inflow (ABL)</text>
+
+  <!-- Vertical buoyancy arrows along hot wall -->
+  <path d="M 180 175 L 180 145" stroke="#c4322f" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="158" y="180" class="lbl" font-size="9">buoyancy ↑</text>
+
+  <!-- Random walk perturbation arrow -->
+  <g transform="translate(305, 140)">
+    <path d="M 0 0 L 8 -6" stroke="#888" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <path d="M 0 0 L -7 4" stroke="#888" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <path d="M 0 0 L 5 8" stroke="#888" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <path d="M 0 0 L -5 -8" stroke="#888" stroke-width="1.2" marker-end="url(#arrow)"/>
+    <text x="-3" y="22" class="lbl" font-size="9">random walk</text>
+  </g>
+
+  <!-- Equations panel on the right -->
+  <g transform="translate(440, 60)">
+    <text x="0" y="0" class="lblb">Per-particle update:</text>
+    <text x="0" y="22" class="eq">x ← x + v·dt</text>
+    <text x="0" y="44" class="eq">v_z ← v_z + gβ(T − T_ref)·dt</text>
+    <text x="0" y="66" class="eq">v ← v + 𝒩(0, σ²)·√dt  (Wiener)</text>
+    <text x="0" y="88" class="eq">T ← T + heat exchange near wall</text>
+    <text x="0" y="120" class="lblb">Aggregate to grid:</text>
+    <text x="0" y="142" class="eq">T(x_i, z_j) = ⟨T_p⟩ over bin</text>
+  </g>
+</svg>

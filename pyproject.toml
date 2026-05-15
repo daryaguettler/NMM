@@ -144,6 +144,8 @@ ignore = [
 "tests/*" = ["S101"]
 "src/surrogate/**" = ["D101", "D102", "D103", "S101", "TRY003", "SIM108"]
 "tests/test_surrogate_*.py" = ["S101", "D103"]
+"src/microclimate/**" = ["D101", "D102", "D103", "D104", "C901", "S301"]
+"tests/test_microclimate_*.py" = ["D100", "D103"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "google"
